@@ -6,25 +6,48 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
-public class Background extends JPanel {
-    File img1 = new File("Grafica/JavaClashOfClans/assets/tile1.png"), img2 = new File("Grafica/JavaClashOfClans/assets/tile2.png");
-    BufferedImage tile1, tile2;
-    int spazioLinee = 12;
-    int linee = 44;
-    int padding = 50;
-    Background(int spazioLinee, int linee, int padding) {
-        super(null); //? imposto il layout a null per permettere ai componenti di mettersi alle posizioni desiderate
+public class GamePanel extends JPanel {
+    private BufferedImage tile1, tile2;
+    private int spazioLinee = 12;
+    private int linee = 44;
+    private int padding = 50;
+
+    GamePanel(int spazioLinee, int linee, int padding, MainWindow mainWindow) {
+        super(null); //? imposto il layout a null per permettere ai componenti aggiunti successivamente di mettersi alle posizioni x e y desiderate
+        setBackground(Color.black);
 
         this.spazioLinee = spazioLinee;
         this.linee = linee;
         this.padding = padding;
 
-
         try {
+            File img1 = new File("Grafica/JavaClashOfClans/assets/tile1.png");
             tile1 = ImageIO.read(img1);
+
+            File img2 = new File("Grafica/JavaClashOfClans/assets/tile2.png");
             tile2 = ImageIO.read(img2);
-        } catch (Exception ignore) {}
-        setBackground(Color.black);
+        } catch (Exception ignored) {}
+
+        //? aggiungo i bottoni
+        //? rimuovo i pixel dei bordi del frame
+        int borderLeft, borderTop, paddingX=25, paddingY=25;
+        if (mainWindow.getInsets().left == 0) {
+            borderLeft = 8; //? imposto 8 perché è il valore di default
+        } else {
+            borderLeft = mainWindow.getInsets().left;
+        }
+
+        if (mainWindow.getInsets().top == 0) {
+            borderTop = 31; //? imposto 31 perché è il valore di default
+        } else {
+            borderTop = mainWindow.getInsets().top;
+        }
+
+
+        //? utilizzo il metodo getBounds perché come scritto nelle docs garantisce prestazioni migliori nella memoria
+        add(new ShopButton(mainWindow.getBounds().width-borderLeft-paddingX, mainWindow.getBounds().height-borderTop-paddingY, mainWindow));
+
+
     }
 
     @Override
@@ -67,7 +90,6 @@ public class Background extends JPanel {
 
     }
 
-
     private int[][] calculateLinesPoints(int i, double xpoint, double ypoint){
         //? i = linea della griglia numero i (prima(=0) e ultima(=linee) => bordi)
         //? x = coseno di 35 gradi * spazio tra le linee
@@ -102,5 +124,10 @@ public class Background extends JPanel {
         }
 
         return returned_array;
+    }
+
+
+    private void baseLoader(JPanel bg){
+        //TODO base loader from random file or txt file
     }
 }
