@@ -1,21 +1,43 @@
 package Grafica.JavaClashOfClans;
 
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class ShopButton extends JButton {
-    public ShopButton(int x, int y, MainWindow mainWindow) {
-        super("NEGOZIO");
-
-        setBounds(x - 150, y - 150, 150, 150);
+public class ShopButton extends Button {
+    public ShopButton(MainWindow mainWindow) {
+        super("NEGOZIO", calcX(mainWindow) - 150, calcY(mainWindow) - 150, 150, 150);
 
         addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                mainWindow.switchCard("Shop");
+                mainWindow.switchGameState("Shop");
             }
         });
     }
-}
 
+
+    private static int calcX(MainWindow mainWindow) {
+        int border;
+        int padding = 25;
+        if (mainWindow.getInsets().left == 0) {
+            border = 8;
+        } else {
+            border = mainWindow.getInsets().left;
+        }
+
+        return mainWindow.getBounds().width - border - padding;
+    }
+
+    private static int calcY(MainWindow mainWindow) {
+        int border;
+        int padding = 25;
+        if (mainWindow.getInsets().left == 0) {
+            border = 31;
+        } else {
+            border = mainWindow.getInsets().left;
+        }
+
+        return mainWindow.getBounds().height - border - padding;
+    }
+
+}

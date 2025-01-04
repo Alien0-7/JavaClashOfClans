@@ -15,7 +15,6 @@ public class MainWindow extends JFrame {
         cardLayout = new CardLayout();
         getContentPane().setLayout(cardLayout);
 
-
         //? aggiunta dei pannelli al pannello con CardLayout
         GamePanel gamePanel = new GamePanel(15, 44, 50, this);
         ShopPanel shopPanel = new ShopPanel(this);
@@ -26,7 +25,7 @@ public class MainWindow extends JFrame {
         setVisible(true);
     }
 
-    void switchCard(String cardName) {
+    void switchGameState(String cardName) {
         cardLayout.show(getContentPane(), cardName);
     }
 

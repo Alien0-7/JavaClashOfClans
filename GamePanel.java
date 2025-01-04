@@ -29,23 +29,8 @@ public class GamePanel extends JPanel {
         } catch (Exception ignored) {}
 
         //? aggiungo i bottoni
-        //? rimuovo i pixel dei bordi del frame
-        int borderLeft, borderTop, paddingX=25, paddingY=25;
-        if (mainWindow.getInsets().left == 0) {
-            borderLeft = 8; //? imposto 8 perché è il valore di default
-        } else {
-            borderLeft = mainWindow.getInsets().left;
-        }
-
-        if (mainWindow.getInsets().top == 0) {
-            borderTop = 31; //? imposto 31 perché è il valore di default
-        } else {
-            borderTop = mainWindow.getInsets().top;
-        }
-
-
         //? utilizzo il metodo getBounds perché come scritto nelle docs garantisce prestazioni migliori nella memoria
-        add(new ShopButton(mainWindow.getBounds().width-borderLeft-paddingX, mainWindow.getBounds().height-borderTop-paddingY, mainWindow));
+        add(new ShopButton(mainWindow));
 
 
     }
@@ -64,7 +49,7 @@ public class GamePanel extends JPanel {
         //? disegno le tiles
         for (int i = 1; i <= linee; i++) {
             int[][] lines_points = calculateLinesPoints(i, xpoint, ypoint);
-            //? lines_points[0] = punti di linee che vanno da sud-est nord ovest
+            //? lines_points[0] = punti di linee che vanno da sud-est nord-ovest
             //? lines_points[1] = punti di linee che vanno da sud-ovest nord-est
 
             //?+ 2 px per l'altezza e larghezza perché così lo faccio grande quanto lo spazio interno e le linee della griglia
