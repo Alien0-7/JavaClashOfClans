@@ -5,6 +5,8 @@ import java.awt.*;
 
 public class MainWindow extends JFrame {
     private CardLayout cardLayout;
+    GamePanel gamePanel;
+    ShopPanel shopPanel;
 
     public MainWindow(){
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -16,8 +18,8 @@ public class MainWindow extends JFrame {
         getContentPane().setLayout(cardLayout);
 
         //? aggiunta dei pannelli al pannello con CardLayout
-        GamePanel gamePanel = new GamePanel(15, 44, 50, this);
-        ShopPanel shopPanel = new ShopPanel(this);
+        gamePanel = new GamePanel(15, 44, 50, this);
+        shopPanel = new ShopPanel(this);
 
         getContentPane().add(gamePanel, "Game");
         getContentPane().add(shopPanel, "Shop");
@@ -29,5 +31,7 @@ public class MainWindow extends JFrame {
         cardLayout.show(getContentPane(), cardName);
     }
 
-
+    public GamePanel getGamePanel() {
+        return gamePanel;
+    }
 }

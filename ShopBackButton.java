@@ -4,7 +4,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class ShopBackButton extends Button {
+public class ShopBackButton extends CardLayoutButton {
     static int paddingX = 25, paddingY = 25;
 
     public ShopBackButton(MainWindow mainWindow) {

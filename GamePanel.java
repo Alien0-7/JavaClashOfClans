@@ -3,6 +3,8 @@ package Grafica.JavaClashOfClans;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
@@ -114,5 +116,19 @@ public class GamePanel extends JPanel {
 
     private void baseLoader(JPanel bg){
         //TODO base loader from random file or txt file
+    }
+
+    public void toggleMouseListener(boolean value) {
+        if (!value) {
+            removeMouseMotionListener(getMouseMotionListeners()[0]); //^ probably not right
+        } else {
+            addMouseMotionListener(new MouseAdapter() {
+                @Override
+                public void mouseMoved(MouseEvent e) {
+                    System.out.println(e.getX() + " " + e.getY());
+                }
+            });
+        }
+
     }
 }

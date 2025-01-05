@@ -4,16 +4,15 @@ import Grafica.JavaClashOfClans.builds.Build;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
-public class ItemPanel extends JPanel {
+public class ShopItemPanel extends JPanel {
     private int width, height;
     private BufferedImage gold, elixir;
 
-    ItemPanel(Build build, int width, int height) {
+    ShopItemPanel(Build build, int width, MainWindow mainWindow) {
         super(null);
 
         try {
@@ -63,21 +62,24 @@ public class ItemPanel extends JPanel {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                g.drawImage(build.getBuildImg(), 0, 0, 25, 25, this);
+                g.drawImage(build.getBuildImg(), 0, 0, 150, 150, this);
             }
 
         };
 
+        buildImagePanel.setBounds((width-150)/2,125,150,150);
         add(buildImagePanel);
 
 
-        JButton btn = new JButton("place it");
+        JButton btn = new ShopItemButton(mainWindow);
         btn.setBounds(20,300,width-(20*2),50);
         add(btn);
 
 
         setBorder(BorderFactory.createLineBorder(Color.black));
     }
+
+
 
 
 }

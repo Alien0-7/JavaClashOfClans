@@ -8,9 +8,9 @@ public abstract class Build {
     String name;
     String typeCost;
     int baseCost;
-    private BufferedImage buildImg;
+    BufferedImage buildImg;
 
-    Build(){
+    protected Build(){
         try {
             File buildImage = new File("Grafica/JavaClashOfClans/assets/"+getName()+".png");
             buildImg = ImageIO.read(buildImage);

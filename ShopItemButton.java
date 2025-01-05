@@ -1,20 +1,20 @@
 package Grafica.JavaClashOfClans;
 
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class ShopSectionButton extends CardLayoutButton {
-
-    ShopSectionButton(ShopPanel shopPanel, String text){
-        super(text);
+public class ShopItemButton extends JButton {
+    ShopItemButton(MainWindow mainWindow) {
+        super("place it");
 
         addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                shopPanel.switchSection(text);
+                mainWindow.switchGameState("Game");
+                mainWindow.getGamePanel().toggleMouseListener(true);
+
             }
         });
     }
-
-
 }

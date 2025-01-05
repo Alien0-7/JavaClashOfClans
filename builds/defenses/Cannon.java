@@ -1,4 +1,6 @@
-package Grafica.JavaClashOfClans.builds;
+package Grafica.JavaClashOfClans.builds.defenses;
+
+import Grafica.JavaClashOfClans.builds.Build;
 
 import javax.imageio.ImageIO;
 import java.io.File;
@@ -7,9 +9,9 @@ public class Cannon extends Build {
     public Cannon() {
         setName("Cannon");
         setTypeCost("gold");
-        setBaseCost(1000);
+        setBaseCost(250);
         try {
-            setBuildImg(ImageIO.read(new File("Grafica/JavaClashOfClans/assets/Cannon.png")));
+            setBuildImg(ImageIO.read(new File("Grafica/JavaClashOfClans/assets/cannon.png")));
         }catch (Exception ignored){}
 
     }

@@ -3,7 +3,7 @@ package Grafica.JavaClashOfClans;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class ShopButton extends Button {
+public class ShopButton extends CardLayoutButton {
     public ShopButton(MainWindow mainWindow) {
         super("NEGOZIO", calcX(mainWindow) - 150, calcY(mainWindow) - 150, 150, 150);
 
