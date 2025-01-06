@@ -32,7 +32,7 @@ public class ShopPanel extends JPanel {
 
         for (String section : sections) {
             sectionPanel.add(new ShopSectionButton(this, capitalize(section)));
-            itemsPanel.add(new ShopContainerItemsPanel(section, mainWindow.getBounds().width, mainWindow.getBounds().height, 2, 5, mainWindow), section);
+            itemsPanel.add(new ShopContainerItemsPanel(section, mainWindow.getBounds().width, mainWindow.getBounds().height, 2, 5, mainWindow), capitalize(section));
         }
 
         mainPanel.add(sectionPanel, BorderLayout.NORTH);
