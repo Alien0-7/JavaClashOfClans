@@ -9,13 +9,15 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 
 public class GamePanel extends JPanel {
-    private BufferedImage tile1, tile2;
+    private BufferedImage tile1, tile2, tile3, tile4;
     private int spazioLinee;
     private int linee;
     private int padding;
     private final double cos35 = Math.cos(Math.toRadians(35));
     private final double sin35 = Math.sin(Math.toRadians(35));
     private Polygon[][] tiles;
+    private boolean drawNewTile;
+    private Tile newTile; //^ change name
 
     GamePanel(int spazioLinee, int linee, int padding, MainWindow mainWindow) {
         super(null); //? imposto il layout a null per permettere ai componenti aggiunti successivamente di mettersi alle posizioni x e y desiderate
@@ -33,13 +35,24 @@ public class GamePanel extends JPanel {
 
             File img2 = new File("Grafica/JavaClashOfClans/assets/tile2.png");
             tile2 = ImageIO.read(img2);
+
+            File img3 = new File("Grafica/JavaClashOfClans/assets/tile3.png");
+            tile3 = ImageIO.read(img3);
+
+            File img4 = new File("Grafica/JavaClashOfClans/assets/tile4.png");
+            tile4 = ImageIO.read(img4);
         } catch (Exception ignored) {}
 
         //? aggiungo i bottoni
         //? utilizzo il metodo getBounds perché come scritto nelle docs garantisce prestazioni migliori nella memoria
         add(new ShopButton(mainWindow));
 
-
+        //? creo l'array multidimensionale che poi mi servirà per capire in quale cella il mouse è posizionato
+        for (int i = 0; i < linee; i++) {
+            for (int j = 0; j < linee; j++) {
+                tiles[i][j] = new Tile(spazioLinee, linee, padding, i, j);
+            }
+        }
     }
 
     @Override
@@ -75,15 +88,14 @@ public class GamePanel extends JPanel {
             g.drawLine(lines_points[1][0],lines_points[1][1],  lines_points[1][2],lines_points[1][3]);
             g.drawLine(lines_points[0][0],lines_points[0][1],  lines_points[0][2],lines_points[0][3]);
 
-            //? creo l'array multidimensionale che poi mi servirà per capire in quale cella il mouse è posizionato
-            for (int j = 0; j < linee; j++) {
-                if (i != linee) {
-                    tiles[i][j] = new Tile(spazioLinee, linee, padding, i, j);
-                }
-            }
-
-
         }
+
+        if (drawNewTile && newTile != null){
+            //? disegno le tile delle build che sto per andare a inserire nella base
+            g.drawImage(tile3, newTile.xpoints[0] - spazioLinee, newTile.ypoints[0], spazioLinee, (int) (sin35 * spazioLinee * 2), null);
+            g.drawImage(tile4, newTile.xpoints[0], newTile.ypoints[0], spazioLinee, (int) (sin35 * spazioLinee * 2), null);
+        }
+
 
     }
 
@@ -130,26 +142,37 @@ public class GamePanel extends JPanel {
 
     public void toggleMouseListener(boolean value) {
         if (!value && getMouseMotionListeners().length > 0) {
+            drawNewTile = false;
             removeMouseMotionListener(getMouseMotionListeners()[0]);
         } else {
+            drawNewTile = true;
             addMouseMotionListener(new MouseAdapter() {
+                Tile oldTile = new Tile(spazioLinee,linee,padding,0,0);
                 @Override
                 public void mouseMoved(MouseEvent e) {
                     int i = 0, j = 0;
                     boolean trovato = false;
                     for (i = 0; i < tiles.length && !trovato; i++) {
-                        for (j = 0; j < tiles[i].length && !trovato; j++) {
+                        for (j = 0; j < tiles[i].length; j++) {
                             if (tiles[i][j].contains(e.getX(), e.getY())){
                                 trovato = true;
+                                break;
                             }
                         }
+                        if (trovato) break;
                     }
 
+
                     if (trovato) {
-                        Graphics g = getGraphics();
-                        if (g != null) {
-                            g.setColor(Color.RED);
-                            g.fillRect(tiles[i-1][j-1].xpoints[0], tiles[i-1][j-1].ypoints[0], spazioLinee, spazioLinee);
+                        Tile currentTile = new Tile(spazioLinee,linee,padding,i,j);
+                        if (!currentTile.toString().equals(oldTile.toString())){
+                            oldTile = currentTile;
+                            if (newTile == null || !oldTile.toString().equals(newTile.toString())){
+                                newTile = oldTile;
+                            }
+                            repaint();
+
+
                         }
                     }
 
@@ -166,4 +189,5 @@ public class GamePanel extends JPanel {
         }
 
     }
+
 }

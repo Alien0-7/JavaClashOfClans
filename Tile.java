@@ -5,7 +5,7 @@ import java.awt.*;
 public class Tile extends Polygon {
     private final double cos35 = Math.cos(Math.toRadians(35));
     private final double sin35 = Math.sin(Math.toRadians(35));
-    private int[] xpoints = new int[4], ypoints = new int[4];
+    public int[] xpoints = new int[4], ypoints = new int[4];
     public Tile(int spazioLinee, int linee, int padding, int i, int j) {
         //^ modify using variables
         if (i != linee) {
@@ -34,5 +34,20 @@ public class Tile extends Polygon {
 
 
 
+
+    }
+
+    @Override
+    public String toString() {
+        String str = "";
+
+        for (int i = 0; i < xpoints.length; i++) {
+            str += "["+xpoints[i]+","+ypoints[i]+"],";
+
+        }
+
+        //? dal primo carattere fino al penultimo
+        //? perché l'ultimo è una virgola
+        return str.substring(0,str.length()-1);
     }
 }
