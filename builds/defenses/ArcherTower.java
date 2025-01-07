@@ -10,6 +10,7 @@ public class ArcherTower extends Build {
         setName("Archer Tower");
         setTypeCost("gold");
         setBaseCost(1000);
+        setSize("3x3");
         try {
             setBuildImg(ImageIO.read(new File("Grafica/JavaClashOfClans/assets/archerTower.png")));
         }catch (Exception ignored){}

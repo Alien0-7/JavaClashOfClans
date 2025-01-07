@@ -10,6 +10,7 @@ public class Bomb extends Build {
         setName("Bomb");
         setTypeCost("gold");
         setBaseCost(400);
+        setSize("1x1");
         try {
             setBuildImg(ImageIO.read(new File("Grafica/JavaClashOfClans/assets/bomb.png")));
         }catch (Exception ignored){}

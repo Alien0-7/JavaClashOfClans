@@ -5,8 +5,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 
 public abstract class Build {
-    String name;
-    String typeCost;
+    String name, typeCost, size;
     int baseCost;
     BufferedImage buildImg;
 
@@ -48,5 +47,13 @@ public abstract class Build {
 
     public void setBuildImg(BufferedImage buildImg) {
         this.buildImg = buildImg;
+    }
+
+    public String getSize() {
+        return size;
+    }
+
+    public void setSize(String size) {
+        this.size = size;
     }
 }

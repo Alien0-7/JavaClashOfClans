@@ -10,6 +10,7 @@ public class Wall extends Build {
         setName("Wall");
         setTypeCost("gold");
         setBaseCost(50);
+        setSize("1x1");
         try {
             setBuildImg(ImageIO.read(new File("Grafica/JavaClashOfClans/assets/wall.png")));
         }catch (Exception ignored){}

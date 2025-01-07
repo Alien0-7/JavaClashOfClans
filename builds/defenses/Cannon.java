@@ -10,6 +10,7 @@ public class Cannon extends Build {
         setName("Cannon");
         setTypeCost("gold");
         setBaseCost(250);
+        setSize("3x3");
         try {
             setBuildImg(ImageIO.read(new File("Grafica/JavaClashOfClans/assets/cannon.png")));
         }catch (Exception ignored){}

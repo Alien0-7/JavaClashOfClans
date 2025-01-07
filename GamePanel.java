@@ -1,5 +1,7 @@
 package Grafica.JavaClashOfClans;
 
+import Grafica.JavaClashOfClans.builds.Build;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -16,8 +18,10 @@ public class GamePanel extends JPanel {
     private final double cos35 = Math.cos(Math.toRadians(35));
     private final double sin35 = Math.sin(Math.toRadians(35));
     private Polygon[][] tiles;
-    private boolean drawNewTile;
-    private Tile newTile; //^ change name
+    //? variabili per le build nuove
+    private Build newBuild;
+    private boolean drawNewBuild;
+    private Tile newTileBuild;
 
     GamePanel(int spazioLinee, int linee, int padding, MainWindow mainWindow) {
         super(null); //? imposto il layout a null per permettere ai componenti aggiunti successivamente di mettersi alle posizioni x e y desiderate
@@ -90,10 +94,27 @@ public class GamePanel extends JPanel {
 
         }
 
-        if (drawNewTile && newTile != null){
+        if (drawNewBuild && newTileBuild != null && newBuild != null){
             //? disegno le tile delle build che sto per andare a inserire nella base
-            g.drawImage(tile3, newTile.xpoints[0] - spazioLinee, newTile.ypoints[0], spazioLinee, (int) (sin35 * spazioLinee * 2), null);
-            g.drawImage(tile4, newTile.xpoints[0], newTile.ypoints[0], spazioLinee, (int) (sin35 * spazioLinee * 2), null);
+            String size = newBuild.getSize();
+            int width = Integer.parseInt(size.split("x")[0]);
+            int height = Integer.parseInt(size.split("x")[1]);
+
+            for (int i = 0; i < height; i++) {
+                for (int j = 0; j < width; j++) {
+                    g.drawImage(tile3,
+                            (int)(newTileBuild.xpoints[0] - spazioLinee + cos35*spazioLinee*j - cos35*spazioLinee*i),
+                            (int)(newTileBuild.ypoints[0] + sin35*spazioLinee*j + sin35*spazioLinee*i),
+                            spazioLinee+2, (int) (sin35 * spazioLinee * 2)+2, null);
+
+                    g.drawImage(tile4,
+                            (int)(newTileBuild.xpoints[0] + cos35*spazioLinee*j - cos35*spazioLinee*i),
+                            (int)(newTileBuild.ypoints[0] + sin35*spazioLinee*j + sin35*spazioLinee*i),
+                            spazioLinee+2, (int) (sin35 * spazioLinee * 2)+2, null);
+                }
+            }
+
+
         }
 
 
@@ -140,12 +161,13 @@ public class GamePanel extends JPanel {
         //TODO base loader from random file or txt file
     }
 
-    public void toggleMouseListener(boolean value) {
+    public void toggleMouseListener(boolean value, Build build) {
         if (!value && getMouseMotionListeners().length > 0) {
-            drawNewTile = false;
+            drawNewBuild = false;
             removeMouseMotionListener(getMouseMotionListeners()[0]);
         } else {
-            drawNewTile = true;
+            this.newBuild = build;
+            drawNewBuild = true;
             addMouseMotionListener(new MouseAdapter() {
                 Tile oldTile = new Tile(spazioLinee,linee,padding,0,0);
                 @Override
@@ -167,8 +189,8 @@ public class GamePanel extends JPanel {
                         Tile currentTile = new Tile(spazioLinee,linee,padding,i,j);
                         if (!currentTile.toString().equals(oldTile.toString())){
                             oldTile = currentTile;
-                            if (newTile == null || !oldTile.toString().equals(newTile.toString())){
-                                newTile = oldTile;
+                            if (newTileBuild == null || !oldTile.toString().equals(newTileBuild.toString())){
+                                newTileBuild = oldTile;
                             }
                             repaint();
 
@@ -182,7 +204,7 @@ public class GamePanel extends JPanel {
             addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    toggleMouseListener(false);
+                    toggleMouseListener(false, null);
                     removeMouseListener(this);
                 }
             });

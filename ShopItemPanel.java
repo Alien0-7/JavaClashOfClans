@@ -71,7 +71,7 @@ public class ShopItemPanel extends JPanel {
         add(buildImagePanel);
 
 
-        JButton btn = new ShopItemButton(mainWindow);
+        JButton btn = new ShopItemButton(mainWindow, build);
         btn.setBounds(20,300,width-(20*2),50);
         add(btn);
 
