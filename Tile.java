@@ -5,7 +5,9 @@ import java.awt.*;
 public class Tile extends Polygon {
     private final double cos35 = Math.cos(Math.toRadians(35));
     private final double sin35 = Math.sin(Math.toRadians(35));
+    public String typeOfBuild = "empty";
     public int[] xpoints = new int[4], ypoints = new int[4];
+
     public Tile(int spazioLinee, int linee, int padding, int i, int j) {
         //^ modify using variables
         if (i != linee) {

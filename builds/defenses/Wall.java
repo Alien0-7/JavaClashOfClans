@@ -12,7 +12,7 @@ public class Wall extends Build {
         setBaseCost(50);
         setSize("1x1");
         try {
-            setBuildImg(ImageIO.read(new File("Grafica/JavaClashOfClans/assets/wall.png")));
+            setBuildImg(ImageIO.read(new File("Grafica/JavaClashOfClans/assets/images/wall.png")));
         }catch (Exception ignored){}
 
     }

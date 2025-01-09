@@ -8,7 +8,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.io.File;
+import java.io.*;
 
 public class GamePanel extends JPanel {
     private BufferedImage tile1, tile2, tile3, tile4;
@@ -17,8 +17,10 @@ public class GamePanel extends JPanel {
     private int padding;
     private final double cos35 = Math.cos(Math.toRadians(35));
     private final double sin35 = Math.sin(Math.toRadians(35));
-    private Polygon[][] tiles;
+
+    private User user;
     //? variabili per le build nuove
+    int colsTemp = 0, rowsTemp = 0;
     private Build newBuild;
     private boolean drawNewBuild;
     private Tile newTileBuild;
@@ -30,33 +32,34 @@ public class GamePanel extends JPanel {
         this.spazioLinee = spazioLinee;
         this.linee = linee;
         this.padding = padding;
+        this.user = new User(linee);
 
-        tiles = new Polygon[linee][linee];
+        //? inizializzo l'array multidimensionale che poi mi servirà per capire in quale cella il mouse è posizionato
+        for (int i = 0; i < linee; i++) {
+            for (int j = 0; j < linee; j++) {
+                if (user.getTiles()[i][j] == null) {
+                    user.getTiles()[i][j] = new Tile(spazioLinee, linee, padding, i, j);
+                }
+            }
+        }
 
         try {
-            File img1 = new File("Grafica/JavaClashOfClans/assets/tile1.png");
+            File img1 = new File("Grafica/JavaClashOfClans/assets/images/tile1.png");
             tile1 = ImageIO.read(img1);
 
-            File img2 = new File("Grafica/JavaClashOfClans/assets/tile2.png");
+            File img2 = new File("Grafica/JavaClashOfClans/assets/images/tile2.png");
             tile2 = ImageIO.read(img2);
 
-            File img3 = new File("Grafica/JavaClashOfClans/assets/tile3.png");
+            File img3 = new File("Grafica/JavaClashOfClans/assets/images/tile3.png");
             tile3 = ImageIO.read(img3);
 
-            File img4 = new File("Grafica/JavaClashOfClans/assets/tile4.png");
+            File img4 = new File("Grafica/JavaClashOfClans/assets/images/tile4.png");
             tile4 = ImageIO.read(img4);
         } catch (Exception ignored) {}
 
         //? aggiungo i bottoni
-        //? utilizzo il metodo getBounds perché come scritto nelle docs garantisce prestazioni migliori nella memoria
         add(new ShopButton(mainWindow));
 
-        //? creo l'array multidimensionale che poi mi servirà per capire in quale cella il mouse è posizionato
-        for (int i = 0; i < linee; i++) {
-            for (int j = 0; j < linee; j++) {
-                tiles[i][j] = new Tile(spazioLinee, linee, padding, i, j);
-            }
-        }
     }
 
     @Override
@@ -69,17 +72,8 @@ public class GamePanel extends JPanel {
         double ypoint = sin35 * spazioLinee;
 
         //? disegno le tiles
-        for (int i = 1; i <= linee; i++) {
-            int[][] lines_points = calculateLinesPoints(i, xpoint, ypoint);
-            //? lines_points[0] = punti di linee che vanno da sud-est nord-ovest
-            //? lines_points[1] = punti di linee che vanno da sud-ovest nord-est
-
-            //?+ 2 px per l'altezza e larghezza perché così lo faccio grande quanto lo spazio interno e le linee della griglia
-            for (int j = 1; j <= linee; j++) {
-                g.drawImage(tile1, (int)((lines_points[0][0]+xpoint*j)-spazioLinee), (int)(lines_points[1][1]-ypoint*j), spazioLinee+2, (int)(ypoint*2)+2, null);
-                g.drawImage(tile2, (int)(lines_points[0][0]+xpoint*j), (int)(lines_points[1][1]-ypoint*j), spazioLinee+2, (int)(ypoint*2)+2, null);
-            }
-        }
+        //?+ 2 px per l'altezza e larghezza perché così lo faccio grande quanto lo spazio interno e le linee della griglia
+        baseLoader(g);
 
         //? disegno la griglia
         for (int i = 0; i <= linee; i++) {
@@ -156,9 +150,16 @@ public class GamePanel extends JPanel {
         return returned_array;
     }
 
+    private void baseLoader(Graphics g){
+        for (int i = 0; i < user.getTiles().length; i++) {
+            for (int j = 0; j < user.getTiles()[i].length; j++) {
+                if (user.getTiles()[i][j].typeOfBuild.equals("empty")){
+                        g.drawImage(tile1, user.getTiles()[i][j].xpoints[0]-spazioLinee, user.getTiles()[i][j].ypoints[0], spazioLinee+2, (int)(spazioLinee*sin35*2)+2, null);
+                        g.drawImage(tile2, user.getTiles()[i][j].xpoints[0], user.getTiles()[i][j].ypoints[0], spazioLinee+2, (int)(spazioLinee*sin35*2)+2, null);
+                }
 
-    private void baseLoader(JPanel bg){
-        //TODO base loader from random file or txt file
+            }
+        }
     }
 
     public void toggleMouseListener(boolean value, Build build) {
@@ -169,14 +170,15 @@ public class GamePanel extends JPanel {
             this.newBuild = build;
             drawNewBuild = true;
             addMouseMotionListener(new MouseAdapter() {
-                Tile oldTile = new Tile(spazioLinee,linee,padding,0,0);
+                Tile oldTile = new Tile(spazioLinee,linee,padding, colsTemp, rowsTemp);
+
                 @Override
                 public void mouseMoved(MouseEvent e) {
-                    int i = 0, j = 0;
+
                     boolean trovato = false;
-                    for (i = 0; i < tiles.length && !trovato; i++) {
-                        for (j = 0; j < tiles[i].length; j++) {
-                            if (tiles[i][j].contains(e.getX(), e.getY())){
+                    for (colsTemp = 0; colsTemp < user.getTiles().length; colsTemp++) {
+                        for (rowsTemp = 0; rowsTemp < user.getTiles()[colsTemp].length; rowsTemp++) {
+                            if (user.getTiles()[colsTemp][rowsTemp].contains(e.getX(), e.getY())){
                                 trovato = true;
                                 break;
                             }
@@ -186,7 +188,7 @@ public class GamePanel extends JPanel {
 
 
                     if (trovato) {
-                        Tile currentTile = new Tile(spazioLinee,linee,padding,i,j);
+                        Tile currentTile = new Tile(spazioLinee,linee,padding, colsTemp, rowsTemp);
                         if (!currentTile.toString().equals(oldTile.toString())){
                             oldTile = currentTile;
                             if (newTileBuild == null || !oldTile.toString().equals(newTileBuild.toString())){
@@ -206,6 +208,20 @@ public class GamePanel extends JPanel {
                 public void mouseClicked(MouseEvent e) {
                     toggleMouseListener(false, null);
                     removeMouseListener(this);
+
+                    user.getTiles()[colsTemp][rowsTemp].typeOfBuild = build.getName();
+//                    colsTemp=0; rowsTemp=0; //? reset variabili
+
+                    System.out.println(user.getTiles()[colsTemp][rowsTemp].typeOfBuild);
+                    try {
+                        FileOutputStream fos = new FileOutputStream(user.getFile());
+                        ObjectOutputStream oos = new ObjectOutputStream(fos);
+                        oos.writeObject(user);
+                    } catch (Exception ex){
+                        System.out.println("Error while trying to save the \"user.dat\" file!\n"+ex);
+                        ex.printStackTrace();
+                    }
+                    //* save build in  i , j
                 }
             });
         }

@@ -24,7 +24,7 @@ public class ShopButton extends CardLayoutButton {
         } else {
             border = mainWindow.getInsets().left;
         }
-
+        //? utilizzo il metodo getBounds perché come scritto nelle docs garantisce prestazioni migliori nella memoria
         return mainWindow.getBounds().width - border - padding;
     }
 
@@ -36,7 +36,7 @@ public class ShopButton extends CardLayoutButton {
         } else {
             border = mainWindow.getInsets().left;
         }
-
+        //? utilizzo il metodo getBounds perché come scritto nelle docs garantisce prestazioni migliori nella memoria
         return mainWindow.getBounds().height - border - padding;
     }
 

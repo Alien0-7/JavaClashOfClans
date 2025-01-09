@@ -13,9 +13,8 @@ public class ShopItemButton extends JButton {
         addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                mainWindow.switchGameState("Game");
                 mainWindow.getGamePanel().toggleMouseListener(true, build);
-
+                mainWindow.switchGameState("Game");
             }
         });
     }
