@@ -8,7 +8,7 @@ import java.io.Serializable;
 
 public class User implements Serializable {
     private Tile[][] tiles;
-    File f = new File("Grafica/JavaClashOfClans/assets/data/user.dat");
+    File f = new File(MainWindow.assetsPath +"/data/user.dat");
 
     public User(int linee) {
         tiles = new Tile[linee][linee];

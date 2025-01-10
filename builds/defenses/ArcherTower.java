@@ -1,5 +1,6 @@
 package Grafica.JavaClashOfClans.builds.defenses;
 
+import Grafica.JavaClashOfClans.MainWindow;
 import Grafica.JavaClashOfClans.builds.Build;
 
 import javax.imageio.ImageIO;
@@ -12,7 +13,7 @@ public class ArcherTower extends Build {
         setBaseCost(1000);
         setSize("3x3");
         try {
-            setBuildImg(ImageIO.read(new File("Grafica/JavaClashOfClans/assets/archerTower.png")));
+            setBuildImg(ImageIO.read(new File(MainWindow.assetsPath+"/images/archerTower.png")));
         }catch (Exception ignored){}
 
     }

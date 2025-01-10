@@ -10,24 +10,24 @@ public class ShopPanel extends JPanel {
     private JPanel itemsPanel;
     ShopPanel(MainWindow mainWindow) {
 
-        //shop top panel
+        //? shop top panel
         setLayout(new BorderLayout());
         JPanel topPanel = new JPanel(null);
-        topPanel.setPreferredSize(new Dimension(0,100)); //set 100 px of height
+        topPanel.setPreferredSize(new Dimension(0,100)); //? set 100 px of height
         topPanel.add(new ShopBackButton(mainWindow)); //? add back button
 
-        //shop main panel =>
-        //section panel and items panel
+        //? shop main panel =>
+        //? section panel and items panel
         JPanel mainPanel = new JPanel(new BorderLayout());
 
 
         JPanel sectionPanel = new JPanel(new GridLayout(1 ,5));
-        sectionPanel.setPreferredSize(new Dimension(0,100)); //set 100 px of height
+        sectionPanel.setPreferredSize(new Dimension(0,100)); //? set 100 px of height
 
         cardLayout = new CardLayout();
         itemsPanel = new JPanel(cardLayout);
 
-        File buildFolder = new File("Grafica/JavaClashOfClans/builds");
+        File buildFolder = new File(MainWindow.assetsPath + "/../builds");
         ArrayList<String> sections = sectionCounter(buildFolder);
 
         for (String section : sections) {
@@ -66,7 +66,7 @@ public class ShopPanel extends JPanel {
                 System.out.println("non ci sono sezioni dello shop");
             }
         } catch (Exception e){
-            System.out.println("errore nel conteggio delle sezioni dello shop");
+            System.out.println("errore nel conteggio delle sezioni dello shop!\n" + e + ", path="+buildFolder.getPath());
         }
 
         return sections;

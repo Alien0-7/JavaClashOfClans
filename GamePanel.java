@@ -11,16 +11,16 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 
 public class GamePanel extends JPanel {
-    private BufferedImage tile1, tile2, tile3, tile4;
-    private int spazioLinee;
-    private int linee;
-    private int padding;
+    private BufferedImage tile1, tile2, tile3, tile4, bg;
+    private int spazioLinee, linee, padding;
+    private MainWindow mainWindow;
     private final double cos35 = Math.cos(Math.toRadians(35));
     private final double sin35 = Math.sin(Math.toRadians(35));
 
     private User user;
+
     //? variabili per le build nuove
-    int colsTemp = 0, rowsTemp = 0;
+    int colTemp = 0, rowTemp = 0;
     private Build newBuild;
     private boolean drawNewBuild;
     private Tile newTileBuild;
@@ -32,6 +32,7 @@ public class GamePanel extends JPanel {
         this.spazioLinee = spazioLinee;
         this.linee = linee;
         this.padding = padding;
+        this.mainWindow = mainWindow;
         this.user = new User(linee);
 
         //? inizializzo l'array multidimensionale che poi mi servirà per capire in quale cella il mouse è posizionato
@@ -44,35 +45,38 @@ public class GamePanel extends JPanel {
         }
 
         try {
-            File img1 = new File("Grafica/JavaClashOfClans/assets/images/tile1.png");
+            File img1 = new File(MainWindow.assetsPath +"/images/tile1.png");
             tile1 = ImageIO.read(img1);
-
-            File img2 = new File("Grafica/JavaClashOfClans/assets/images/tile2.png");
+            File img2 = new File(MainWindow.assetsPath +"/images/tile2.png");
             tile2 = ImageIO.read(img2);
 
-            File img3 = new File("Grafica/JavaClashOfClans/assets/images/tile3.png");
+            File img3 = new File(MainWindow.assetsPath +"/images/tile3.png");
             tile3 = ImageIO.read(img3);
 
-            File img4 = new File("Grafica/JavaClashOfClans/assets/images/tile4.png");
+            File img4 = new File(MainWindow.assetsPath +"/images/tile4.png");
             tile4 = ImageIO.read(img4);
+
+            File bgimg = new File(MainWindow.assetsPath +"/images/background.png");
+            bg = ImageIO.read(bgimg);
         } catch (Exception ignored) {}
 
         //? aggiungo i bottoni
         add(new ShopButton(mainWindow));
-
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
+        int bgWidth = bg.getWidth()*MainWindow.calcRightY(mainWindow,0)/bg.getHeight();
+
+        g.drawImage(bg, -(bgWidth - MainWindow.calcRightX(mainWindow, 0))/2,0, bgWidth,MainWindow.calcRightY(mainWindow,0) ,null);
 
         g.setColor(Color.GREEN);
         double xpoint = cos35 * spazioLinee;
         double ypoint = sin35 * spazioLinee;
 
         //? disegno le tiles
-        //?+ 2 px per l'altezza e larghezza perché così lo faccio grande quanto lo spazio interno e le linee della griglia
         baseLoader(g);
 
         //? disegno la griglia
@@ -114,7 +118,7 @@ public class GamePanel extends JPanel {
 
     }
 
-    private int[][] calculateLinesPoints(int i, double xpoint, double ypoint){
+    private int[][] calculateLinesPoints(int i, double xpoint, double ypoint) {
         //? i = linea della griglia numero i (prima(=0) e ultima(=linee) => bordi)
         //? x = coseno di 35 gradi * spazio tra le linee
         //? y = seno di 35 gradi * spazio tra le linee
@@ -149,13 +153,23 @@ public class GamePanel extends JPanel {
 
         return returned_array;
     }
+    private void baseLoader(Graphics g) {
+        //?+ 2px per l'altezza e larghezza di ogni tile perché così aggiungo lo spazio occupato dalle linee della griglia ai lati dell'immagine
 
-    private void baseLoader(Graphics g){
         for (int i = 0; i < user.getTiles().length; i++) {
             for (int j = 0; j < user.getTiles()[i].length; j++) {
-                if (user.getTiles()[i][j].typeOfBuild.equals("empty")){
+                switch (user.getTiles()[i][j].typeOfBuild.toLowerCase()){
+                    case "bomb":
+                    case "archer tower":
+                    case "cannon":
+                    case "wall":
+                        g.drawImage(tile3, user.getTiles()[i][j].xpoints[0]-spazioLinee, user.getTiles()[i][j].ypoints[0], spazioLinee+2, (int)(spazioLinee*sin35*2)+2, null);
+                        g.drawImage(tile4, user.getTiles()[i][j].xpoints[0], user.getTiles()[i][j].ypoints[0], spazioLinee+2, (int)(spazioLinee*sin35*2)+2, null);
+                        break;
+                    default:
                         g.drawImage(tile1, user.getTiles()[i][j].xpoints[0]-spazioLinee, user.getTiles()[i][j].ypoints[0], spazioLinee+2, (int)(spazioLinee*sin35*2)+2, null);
                         g.drawImage(tile2, user.getTiles()[i][j].xpoints[0], user.getTiles()[i][j].ypoints[0], spazioLinee+2, (int)(spazioLinee*sin35*2)+2, null);
+
                 }
 
             }
@@ -170,62 +184,74 @@ public class GamePanel extends JPanel {
             this.newBuild = build;
             drawNewBuild = true;
             addMouseMotionListener(new MouseAdapter() {
-                Tile oldTile = new Tile(spazioLinee,linee,padding, colsTemp, rowsTemp);
-
                 @Override
                 public void mouseMoved(MouseEvent e) {
-
-                    boolean trovato = false;
-                    for (colsTemp = 0; colsTemp < user.getTiles().length; colsTemp++) {
-                        for (rowsTemp = 0; rowsTemp < user.getTiles()[colsTemp].length; rowsTemp++) {
-                            if (user.getTiles()[colsTemp][rowsTemp].contains(e.getX(), e.getY())){
-                                trovato = true;
-                                break;
-                            }
-                        }
-                        if (trovato) break;
-                    }
-
-
-                    if (trovato) {
-                        Tile currentTile = new Tile(spazioLinee,linee,padding, colsTemp, rowsTemp);
-                        if (!currentTile.toString().equals(oldTile.toString())){
-                            oldTile = currentTile;
-                            if (newTileBuild == null || !oldTile.toString().equals(newTileBuild.toString())){
-                                newTileBuild = oldTile;
-                            }
-                            repaint();
-
-
-                        }
-                    }
-
+                    GamePanel.this.mouseMoved(e, build);
                 }
             });
 
             addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    toggleMouseListener(false, null);
+                    GamePanel.this.mouseClicked(build);
                     removeMouseListener(this);
-
-                    user.getTiles()[colsTemp][rowsTemp].typeOfBuild = build.getName();
-//                    colsTemp=0; rowsTemp=0; //? reset variabili
-
-                    System.out.println(user.getTiles()[colsTemp][rowsTemp].typeOfBuild);
-                    try {
-                        FileOutputStream fos = new FileOutputStream(user.getFile());
-                        ObjectOutputStream oos = new ObjectOutputStream(fos);
-                        oos.writeObject(user);
-                    } catch (Exception ex){
-                        System.out.println("Error while trying to save the \"user.dat\" file!\n"+ex);
-                        ex.printStackTrace();
-                    }
-                    //* save build in  i , j
                 }
             });
         }
 
+    }
+    private void mouseMoved(MouseEvent e, Build build) {
+        boolean trovato = false;
+        Tile oldTile = new Tile(spazioLinee,linee,padding, colTemp, rowTemp);
+        for (colTemp = 0; colTemp < user.getTiles().length; colTemp++) {
+            for (rowTemp = 0; rowTemp < user.getTiles()[colTemp].length; rowTemp++) {
+                if (user.getTiles()[colTemp][rowTemp].contains(e.getX(), e.getY())) {
+                    if (colTemp + Integer.parseInt(build.getSize().split("x")[0]) > user.getTiles().length){
+                        colTemp -= colTemp + Integer.parseInt(build.getSize().split("x")[0]) - user.getTiles().length;
+                    }
+                    if (rowTemp + Integer.parseInt(build.getSize().split("x")[1]) > user.getTiles()[colTemp].length) {
+                        rowTemp -= rowTemp + Integer.parseInt(build.getSize().split("x")[1]) - user.getTiles()[colTemp].length;
+                    }
+                    trovato = true;
+                    break;
+                }
+            }
+            if (trovato) {
+                break;
+            }
+        }
+
+
+        if (trovato) {
+            Tile currentTile = new Tile(spazioLinee,linee,padding, colTemp, rowTemp);
+            if (!currentTile.toString().equals(oldTile.toString())){
+                oldTile = currentTile;
+                if (newTileBuild == null || !oldTile.toString().equals(newTileBuild.toString())){
+                    newTileBuild = oldTile;
+                }
+                repaint();
+
+
+            }
+        }
+    }
+    private void mouseClicked(Build build) {
+        toggleMouseListener(false, null);
+
+
+        for (int i = colTemp; i < colTemp +Integer.parseInt(build.getSize().split("x")[0]); i++) {
+            for (int j = rowTemp; j < rowTemp +Integer.parseInt(build.getSize().split("x")[1]); j++) {
+                user.getTiles()[i][j].typeOfBuild = build.getName();
+            }
+        }
+
+        try {
+            FileOutputStream fos = new FileOutputStream(user.getFile());
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(user);
+        } catch (Exception ex){
+            System.out.println("Error while trying to save the \"user.dat\" file!\n"+ex);
+        }
     }
 
 }

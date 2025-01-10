@@ -1,5 +1,6 @@
 package Grafica.JavaClashOfClans.builds.defenses;
 
+import Grafica.JavaClashOfClans.MainWindow;
 import Grafica.JavaClashOfClans.builds.Build;
 
 import javax.imageio.ImageIO;
@@ -12,7 +13,7 @@ public class Wall extends Build {
         setBaseCost(50);
         setSize("1x1");
         try {
-            setBuildImg(ImageIO.read(new File("Grafica/JavaClashOfClans/assets/images/wall.png")));
+            setBuildImg(ImageIO.read(new File(MainWindow.assetsPath +"/images/wall.png")));
         }catch (Exception ignored){}
 
     }

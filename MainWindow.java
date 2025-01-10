@@ -4,6 +4,13 @@ import javax.swing.*;
 import java.awt.*;
 
 public class MainWindow extends JFrame {
+    //! EDIT THIS PATH IF IMAGES DOESN'T APPEAR
+    public static String assetsPath = "Grafica/JavaClashOfClans/assets";
+
+
+
+
+
     private CardLayout cardLayout;
     GamePanel gamePanel;
     ShopPanel shopPanel;
@@ -33,5 +40,27 @@ public class MainWindow extends JFrame {
 
     public GamePanel getGamePanel() {
         return gamePanel;
+    }
+
+    static int calcRightX(MainWindow mainWindow, int padding) {
+        int border;
+        if (mainWindow.getInsets().left == 0) {
+            border = 8;
+        } else {
+            border = mainWindow.getInsets().left;
+        }
+        //? utilizzo il metodo getBounds perché come scritto nelle docs garantisce prestazioni migliori nella memoria
+        return mainWindow.getBounds().width - border - padding;
+    }
+
+    static int calcRightY(MainWindow mainWindow, int padding) {
+        int border;
+        if (mainWindow.getInsets().left == 0) {
+            border = 31;
+        } else {
+            border = mainWindow.getInsets().left;
+        }
+        //? utilizzo il metodo getBounds perché come scritto nelle docs garantisce prestazioni migliori nella memoria
+        return mainWindow.getBounds().height - border - padding;
     }
 }

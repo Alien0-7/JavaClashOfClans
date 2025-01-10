@@ -16,9 +16,9 @@ public class ShopItemPanel extends JPanel {
         super(null);
 
         try {
-            File goldImg = new File("Grafica/JavaClashOfClans/assets/images/gold.png");
+            File goldImg = new File(MainWindow.assetsPath +"/images/gold.png");
             gold = ImageIO.read(goldImg);
-            File elixirImg = new File("Grafica/JavaClashOfClans/assets/images/elixir.png");
+            File elixirImg = new File(MainWindow.assetsPath +"/images/elixir.png");
             elixir = ImageIO.read(elixirImg);
         } catch (Exception ignored) {}
 

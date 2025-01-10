@@ -1,5 +1,6 @@
 package Grafica.JavaClashOfClans.builds.traps;
 
+import Grafica.JavaClashOfClans.MainWindow;
 import Grafica.JavaClashOfClans.builds.Build;
 
 import javax.imageio.ImageIO;
@@ -12,7 +13,7 @@ public class Bomb extends Build {
         setBaseCost(400);
         setSize("1x1");
         try {
-            setBuildImg(ImageIO.read(new File("Grafica/JavaClashOfClans/assets/images/bomb.png")));
+            setBuildImg(ImageIO.read(new File(MainWindow.assetsPath +"/images/bomb.png")));
         }catch (Exception ignored){}
 
     }

@@ -1,5 +1,7 @@
 package Grafica.JavaClashOfClans.builds;
 
+import Grafica.JavaClashOfClans.MainWindow;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -8,13 +10,6 @@ public abstract class Build {
     String name, typeCost, size;
     int baseCost;
     BufferedImage buildImg;
-
-    protected Build(){
-        try {
-            File buildImage = new File("Grafica/JavaClashOfClans/assets/"+getName()+".png");
-            buildImg = ImageIO.read(buildImage);
-        } catch (Exception ignored) {}
-    }
 
     public String getName() {
         return name;
