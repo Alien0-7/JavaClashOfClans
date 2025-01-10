@@ -11,7 +11,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 
 public class GamePanel extends JPanel {
-    private BufferedImage tile1, tile2, tile3, tile4, bg;
+    private BufferedImage tile1, tile2, tile3, tile4, tile5, tile6, bg;
     private int spazioLinee, linee, padding;
     private MainWindow mainWindow;
     private final double cos35 = Math.cos(Math.toRadians(35));
@@ -22,7 +22,7 @@ public class GamePanel extends JPanel {
     //? variabili per le build nuove
     int colTemp = 0, rowTemp = 0;
     private Build newBuild;
-    private boolean drawNewBuild;
+    private boolean drawNewBuild, newBuildCollide;
     private Tile newTileBuild;
 
     GamePanel(int spazioLinee, int linee, int padding, MainWindow mainWindow) {
@@ -47,6 +47,7 @@ public class GamePanel extends JPanel {
         try {
             File img1 = new File(MainWindow.assetsPath +"/images/tile1.png");
             tile1 = ImageIO.read(img1);
+
             File img2 = new File(MainWindow.assetsPath +"/images/tile2.png");
             tile2 = ImageIO.read(img2);
 
@@ -55,6 +56,12 @@ public class GamePanel extends JPanel {
 
             File img4 = new File(MainWindow.assetsPath +"/images/tile4.png");
             tile4 = ImageIO.read(img4);
+
+            File img5 = new File(MainWindow.assetsPath +"/images/tile5.png");
+            tile5 = ImageIO.read(img5);
+
+            File img6 = new File(MainWindow.assetsPath +"/images/tile6.png");
+            tile6 = ImageIO.read(img6);
 
             File bgimg = new File(MainWindow.assetsPath +"/images/background.png");
             bg = ImageIO.read(bgimg);
@@ -92,20 +99,26 @@ public class GamePanel extends JPanel {
 
         }
 
-        if (drawNewBuild && newTileBuild != null && newBuild != null){
+        if (drawNewBuild && newTileBuild != null && newBuild != null) {
             //? disegno le tile delle build che sto per andare a inserire nella base
             String size = newBuild.getSize();
             int width = Integer.parseInt(size.split("x")[0]);
             int height = Integer.parseInt(size.split("x")[1]);
+            BufferedImage newTile1 = tile3, newTile2 = tile4;
+
+            if (newBuildCollide) {
+                newTile1 = tile5;
+                newTile2 = tile6;
+            }
 
             for (int i = 0; i < height; i++) {
                 for (int j = 0; j < width; j++) {
-                    g.drawImage(tile3,
+                    g.drawImage(newTile1,
                             (int)(newTileBuild.xpoints[0] - spazioLinee + cos35*spazioLinee*j - cos35*spazioLinee*i),
                             (int)(newTileBuild.ypoints[0] + sin35*spazioLinee*j + sin35*spazioLinee*i),
                             spazioLinee+2, (int) (sin35 * spazioLinee * 2)+2, null);
 
-                    g.drawImage(tile4,
+                    g.drawImage(newTile2,
                             (int)(newTileBuild.xpoints[0] + cos35*spazioLinee*j - cos35*spazioLinee*i),
                             (int)(newTileBuild.ypoints[0] + sin35*spazioLinee*j + sin35*spazioLinee*i),
                             spazioLinee+2, (int) (sin35 * spazioLinee * 2)+2, null);
@@ -201,8 +214,7 @@ public class GamePanel extends JPanel {
 
     }
     private void mouseMoved(MouseEvent e, Build build) {
-        boolean trovato = false;
-        Tile oldTile = new Tile(spazioLinee,linee,padding, colTemp, rowTemp);
+        boolean found = false;
         for (colTemp = 0; colTemp < user.getTiles().length; colTemp++) {
             for (rowTemp = 0; rowTemp < user.getTiles()[colTemp].length; rowTemp++) {
                 if (user.getTiles()[colTemp][rowTemp].contains(e.getX(), e.getY())) {
@@ -212,45 +224,53 @@ public class GamePanel extends JPanel {
                     if (rowTemp + Integer.parseInt(build.getSize().split("x")[1]) > user.getTiles()[colTemp].length) {
                         rowTemp -= rowTemp + Integer.parseInt(build.getSize().split("x")[1]) - user.getTiles()[colTemp].length;
                     }
-                    trovato = true;
+                    found = true;
                     break;
                 }
             }
-            if (trovato) {
+            if (found) {
                 break;
             }
         }
 
 
-        if (trovato) {
-            Tile currentTile = new Tile(spazioLinee,linee,padding, colTemp, rowTemp);
-            if (!currentTile.toString().equals(oldTile.toString())){
-                oldTile = currentTile;
-                if (newTileBuild == null || !oldTile.toString().equals(newTileBuild.toString())){
-                    newTileBuild = oldTile;
+        if (found) {
+            newTileBuild = new Tile(spazioLinee,linee,padding, colTemp, rowTemp);
+
+            boolean collide = false;
+            for (int i = 0; i < Integer.parseInt(build.getSize().split("x")[0]); i++) {
+                for (int j = 0; j < Integer.parseInt(build.getSize().split("x")[1]); j++) {
+                    if (!user.getTiles()[colTemp+i][rowTemp+j].typeOfBuild.equals("empty")) {
+                        collide = true;
+                        break;
+                    }
                 }
-                repaint();
-
-
             }
+
+            newBuildCollide = collide;
+
+            repaint();
         }
     }
     private void mouseClicked(Build build) {
-        toggleMouseListener(false, null);
+        if (!newBuildCollide) {
+            toggleMouseListener(false, null);
 
 
-        for (int i = colTemp; i < colTemp +Integer.parseInt(build.getSize().split("x")[0]); i++) {
-            for (int j = rowTemp; j < rowTemp +Integer.parseInt(build.getSize().split("x")[1]); j++) {
-                user.getTiles()[i][j].typeOfBuild = build.getName();
+            for (int i = colTemp; i < colTemp + Integer.parseInt(build.getSize().split("x")[0]); i++) {
+                for (int j = rowTemp; j < rowTemp + Integer.parseInt(build.getSize().split("x")[1]); j++) {
+                    user.getTiles()[i][j].typeOfBuild = build.getName();
+                }
             }
-        }
 
-        try {
-            FileOutputStream fos = new FileOutputStream(user.getFile());
-            ObjectOutputStream oos = new ObjectOutputStream(fos);
-            oos.writeObject(user);
-        } catch (Exception ex){
-            System.out.println("Error while trying to save the \"user.dat\" file!\n"+ex);
+            try {
+                FileOutputStream fos = new FileOutputStream(user.getFile());
+                ObjectOutputStream oos = new ObjectOutputStream(fos);
+                oos.writeObject(user);
+                repaint();
+            } catch (Exception ex) {
+                System.out.println("Error while trying to save the \"user.dat\" file!\n" + ex);
+            }
         }
     }
 
