@@ -9,8 +9,6 @@ public class MainWindow extends JFrame {
 
 
 
-
-
     private CardLayout cardLayout;
     GamePanel gamePanel;
     ShopPanel shopPanel;
@@ -53,7 +51,7 @@ public class MainWindow extends JFrame {
         return mainWindow.getBounds().width - border - padding;
     }
 
-    static int calcRightY(MainWindow mainWindow, int padding) {
+    static int calcBottomY(MainWindow mainWindow, int padding) {
         int border;
         if (mainWindow.getInsets().left == 0) {
             border = 31;

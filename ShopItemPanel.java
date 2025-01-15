@@ -34,7 +34,7 @@ public class ShopItemPanel extends JPanel {
         costPanel.setBorder(BorderFactory.createLineBorder(new Color(66,49,137)));
 
         JLabel baseCost = new JLabel(build.getBaseCost()+"");
-        baseCost.setFont(new Font("Algerian", Font.BOLD, 20));
+        baseCost.setFont(new Font("", Font.BOLD, 20));
         costPanel.add(baseCost);
 
         JPanel typeCostImagePanel = new JPanel() {
@@ -69,8 +69,6 @@ public class ShopItemPanel extends JPanel {
 
         buildImagePanel.setBounds((width-150)/2,125,150,150);
         add(buildImagePanel);
-
-
         JButton btn = new ShopItemButton(mainWindow, build);
         btn.setBounds(20,300,width-(20*2),50);
         add(btn);

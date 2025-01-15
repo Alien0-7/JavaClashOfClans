@@ -1,19 +1,22 @@
 package Grafica.JavaClashOfClans;
 
-import java.awt.*;
+import Grafica.JavaClashOfClans.builds.Build;
 
-public class Tile extends Polygon {
+import java.awt.*;
+import java.io.Serializable;
+
+public class Tile extends Polygon implements Serializable {
     private final double cos35 = Math.cos(Math.toRadians(35));
     private final double sin35 = Math.sin(Math.toRadians(35));
     private int spazioLinee, linee, padding;
-    public String typeOfBuild = "empty";
+    public Build build;
     public int[] xpoints = new int[4], ypoints = new int[4];
 
     public Tile(int spazioLinee, int linee, int padding, int i, int j) {
         this.spazioLinee = spazioLinee;
         this.linee = linee;
         this.padding = padding;
-        //^ modify using variables
+        //* modify using variables
         if (i != linee) {
             xpoints = new int[]{
                     (int) (cos35 * spazioLinee * linee + padding + cos35 * spazioLinee * j - cos35 * spazioLinee * i),
@@ -67,5 +70,13 @@ public class Tile extends Polygon {
 
     public int getPadding() {
         return padding;
+    }
+
+    public void setBuild(Build build) {
+        this.build = build;
+    }
+
+    public Build getBuild() {
+        return build;
     }
 }

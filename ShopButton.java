@@ -5,7 +5,7 @@ import java.awt.event.ActionListener;
 
 public class ShopButton extends CardLayoutButton {
     public ShopButton(MainWindow mainWindow) {
-        super("NEGOZIO", MainWindow.calcRightX(mainWindow, 25) - 150, MainWindow.calcRightY(mainWindow, 25) - 150, 150, 150);
+        super("NEGOZIO", MainWindow.calcRightX(mainWindow, 25) - 150, MainWindow.calcBottomY(mainWindow, 25) - 150, 150, 150);
 
         addActionListener(new ActionListener() {
             @Override
