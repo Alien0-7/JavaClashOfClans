@@ -40,7 +40,7 @@ public class GoldMine extends Build {
     }
 
     private void setupTimer() {
-        this.t = new Timer(1000, new ActionListener() {
+        this.t = new Timer(10, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (goldCapacity >= goldStored-((double) goldGenerated / (60 * 60))) {

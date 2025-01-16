@@ -55,7 +55,7 @@ public class ResourcePanel extends JPanel {
         g.fillRect(width-widthPercInPixel,0,widthPercInPixel,height);
     }
 
-    public void aaa(int max, int value) {
+    public void recreate(int max, int value) {
         this.resourceMaxValue = max;
         this.resourceValue = value;
         valueLabel.setText(value+" ");

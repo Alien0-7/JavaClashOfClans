@@ -20,7 +20,7 @@ public class GamePanel extends JPanel {
     private final double sin35 = Math.sin(Math.toRadians(35));
 
     private User user;
-    private Timer resourceRepaintTimer;
+    private Timer resourceRepaintGoldTimer, resourceRepaintElixirTimer;
     private ResourcePanel resourceGoldPanel, resourceElixirPanel;
 
 
@@ -131,7 +131,6 @@ public class GamePanel extends JPanel {
             int height = Integer.parseInt(size.split("x")[1]);
             BufferedImage newTile1 = tile3, newTile2 = tile4;
 
-            g.drawImage(newBuild.getBuildImg(), coordsBuildImagesCalc(newBuild)[0], coordsBuildImagesCalc(newBuild)[1], null);
 
             if (newBuildCollide) {
                 newTile1 = tile5;
@@ -153,6 +152,7 @@ public class GamePanel extends JPanel {
             }
 
 
+            g.drawImage(newBuild.getBuildImg(), coordsBuildImagesCalc(newBuild)[0], coordsBuildImagesCalc(newBuild)[1], null);
 
 
         }
@@ -235,7 +235,7 @@ public class GamePanel extends JPanel {
     }
     private void buildLoader(Graphics g){
         for (Build build : user.getBuildsPlaced()) {
-            if (build.getBuildImg() != null) {
+            if (build.getBuildImg() != null && build.getTiles() != null) {
                 g.drawImage(build.getBuildImg(), coordsBuildImagesCalc(build)[0], coordsBuildImagesCalc(build)[1], null);
             }
         }
@@ -395,43 +395,60 @@ public class GamePanel extends JPanel {
     public void resourcesToggleMouseListener(boolean value, String type){
         if (!value){
             removeMouseMotionListener(resourcesMouseMotionListener);
-            if (this.resourceRepaintTimer != null){
-                resourceRepaintTimer.stop();
+            if (this.resourceRepaintGoldTimer != null){
+                resourceRepaintGoldTimer.stop();
             }
         } else {
-            this.resourceRepaintTimer = new Timer(15, new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    if (user.calcTotalElixir() >= 10 && paintedElixirIcon) {
-                        repaint();
-                        paintedElixirIcon = true;
-                    } else {
-                        paintedElixirIcon = false;
-                    }
+            if (type.equals("gold")){
+                this.resourceRepaintGoldTimer = new Timer(15, new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        if (user.calcTotalGold() >= 10) {
+                            paintedGoldIcon = true;
+                            repaint();
+                            resourcesMouseMotionListener = new MouseAdapter() {
+                                @Override
+                                public void mouseMoved(MouseEvent e) {
+                                    ArrayList<Polygon> resourcesTiles = user.calcResourcesTiles(type);
+                                    GamePanel.this.resourcesMouseMoved(e, type, resourcesTiles);
+                                }
+                            };
+                            addMouseMotionListener(resourcesMouseMotionListener);
+                        } else {
+                            paintedGoldIcon = false;
+                        }
 
-                    if (user.calcTotalGold() >= 10 && paintedGoldIcon) {
-                        repaint();
-                        paintedGoldIcon = true;
-                    } else {
-                        paintedGoldIcon = false;
                     }
-                }
-            });
+                });
+                resourceRepaintGoldTimer.start();
 
-            resourceRepaintTimer.start();
-            resourcesMouseMotionListener = new MouseAdapter() {
-                @Override
-                public void mouseMoved(MouseEvent e) {
-                    ArrayList<Polygon> resourcesTiles = user.calcResourcesTiles(type);
-                    GamePanel.this.resourcesMouseMoved(e, type, resourcesTiles);
-                }
-            };
-            addMouseMotionListener(resourcesMouseMotionListener);
+            } else if (type.equals("elixir")) {
+                this.resourceRepaintElixirTimer = new Timer(15, new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        if (user.calcTotalElixir() >= 10) {
+                            paintedElixirIcon = true;
+                            repaint();
+                            resourcesMouseMotionListener = new MouseAdapter() {
+                                @Override
+                                public void mouseMoved(MouseEvent e) {
+                                    ArrayList<Polygon> resourcesTiles = user.calcResourcesTiles(type);
+                                    GamePanel.this.resourcesMouseMoved(e, type, resourcesTiles);
+                                }
+                            };
+                            addMouseMotionListener(resourcesMouseMotionListener);
+                        } else {
+                            paintedElixirIcon = false;
+                        }
+                    }
+                });
+
+                resourceRepaintElixirTimer.start();
+            }
 
         }
     }
     private void resourcesMouseMoved(MouseEvent e, String type, ArrayList<Polygon> rt){
-
         for (Polygon tiles: rt) {
             if (tiles.contains(e.getX(), e.getY()) && getMouseListeners().length == 0) {
                 addMouseListener(new MouseAdapter() {
@@ -446,29 +463,24 @@ public class GamePanel extends JPanel {
     }
     private void resourcesMouseClicked(String type){
         if (type.equals("gold")) {
-            if (user.calcTotalGold() >= 10) {
-                double totalGold = 0;
-                for (Build build : user.getBuildsPlacedByName("Gold Mine")) {
-                    GoldMine gm = (GoldMine) build;
-                    totalGold += gm.collect();
-                }
-                user.addGold((int) totalGold);
-                this.resourceGoldPanel.aaa(user.getMaxGold(), user.getGold());
-                repaint();
+            double totalGold = 0;
+            for (Build build : user.getBuildsPlacedByName("Gold Mine")) {
+                GoldMine gm = (GoldMine) build;
+                totalGold += gm.collect();
             }
+            user.addGold((int) totalGold);
+            this.resourceGoldPanel.recreate(user.getMaxGold(), user.getGold());
+            repaint();
 
         } else if (type.equals("elixir")) {
-            if (user.calcTotalElixir() >= 10) {
-                double totalElixir = 0;
-                for (Build build : user.getBuildsPlacedByName("Elixir Collected")) {
-                    ElixirCollector ec = (ElixirCollector) build;
-                    totalElixir += ec.collect();
-                }
-
-                user.addElixir((int)totalElixir);
-                this.resourceElixirPanel.aaa(user.getMaxElixir(), user.getElixir());
-                repaint();
+            double totalElixir = 0;
+            for (Build build : user.getBuildsPlacedByName("Elixir Collector")) {
+                ElixirCollector ec = (ElixirCollector) build;
+                totalElixir += ec.collect();
             }
+            user.addElixir((int) totalElixir);
+            this.resourceElixirPanel.recreate(user.getMaxElixir(), user.getElixir());
+            repaint();
 
         }
     }

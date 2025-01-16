@@ -8,13 +8,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class ElixirCollector extends Build {
-    private boolean canProduce;
     private int elixirGenerated, elixirCapacity;
     private double elixirStored;
     private Timer t;
 
-    public ElixirCollector(boolean canProduce) {
-        this.canProduce = canProduce;
+    public ElixirCollector() {
         setName("Elixir Collector");
         setTypeCost("gold");
         setBaseCost(150);
@@ -25,32 +23,7 @@ public class ElixirCollector extends Build {
         elixirCapacity = 1000;
         elixirStored = 0;
 
-        this.t = new Timer(1000, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (ElixirCollector.this.canProduce) {
-                    if (elixirCapacity <= elixirStored) {
-                        elixirStored += ((double) elixirGenerated / (60 * 60));
-                    } else if (elixirStored + ((double) elixirGenerated / (60 * 60)) > elixirCapacity) {
-                        elixirStored = elixirCapacity;
-                    }
-
-                    if (elixirCapacity <= elixirStored) {
-                        ElixirCollector.this.t.start();
-                    } else {
-                        ElixirCollector.this.t.stop();
-                    }
-
-                    System.out.println("elixir=" + elixirStored + "/" + elixirCapacity);
-                } else {
-                    ElixirCollector.this.t.stop();
-                }
-
-            }
-        });
-
-
-
+        setupTimer();
     }
 
     public void setCanProduce(boolean canProduce) {
@@ -67,7 +40,7 @@ public class ElixirCollector extends Build {
     }
 
     private void setupTimer() {
-        this.t = new Timer(1000, new ActionListener() {
+        this.t = new Timer(10, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (elixirCapacity >= elixirStored-((double) elixirGenerated / (60 * 60))) {
@@ -91,6 +64,17 @@ public class ElixirCollector extends Build {
         elixirStored = 0;
         setCanProduce(true);
         return oldElixirStored;
+    }
+
+    @Override
+    public String toString() {
+        return "Elixir Collector{" +
+                "elixirGenerated=" + elixirGenerated +
+                ", elixirCapacity=" + elixirCapacity +
+                ", elixirStored=" + elixirStored +
+                ", t.isRunning()=" + t.isRunning() +
+                ", t=" + t +
+                '}';
     }
 
     public double getElixirStored() {

@@ -49,7 +49,7 @@ public class ShopContainerItemsPanel extends JPanel {
 
         } else if (section.equals("resources")) {
             arrayItems.add(new GoldMine());
-            arrayItems.add(new ElixirCollector(false));
+            arrayItems.add(new ElixirCollector());
         }
 
 
