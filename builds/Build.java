@@ -1,11 +1,8 @@
 package Grafica.JavaClashOfClans.builds;
 
-import Grafica.JavaClashOfClans.MainWindow;
 import Grafica.JavaClashOfClans.Tile;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.Serializable;
 
 public abstract class Build implements Serializable {
@@ -62,5 +59,14 @@ public abstract class Build implements Serializable {
 
     public void setTiles(Tile[] tiles) {
         this.tiles = tiles;
+    }
+
+    public int[] getCenterPoint(double cos, double sin, int spaziolinee) {
+        int x,y;
+
+        x = (int)(Integer.parseInt(getSize().split("x")[0])/2 * cos * spaziolinee + getTiles()[0].xpoints[0]);
+        y = (int)(Integer.parseInt(getSize().split("x")[1])/2 * sin * spaziolinee + getTiles()[0].ypoints[0]);
+
+        return new int[]{x,y};
     }
 }

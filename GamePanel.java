@@ -131,6 +131,8 @@ public class GamePanel extends JPanel {
             int height = Integer.parseInt(size.split("x")[1]);
             BufferedImage newTile1 = tile3, newTile2 = tile4;
 
+            g.drawImage(newBuild.getBuildImg(), coordsBuildImagesCalc(newBuild)[0], coordsBuildImagesCalc(newBuild)[1], null);
+
             if (newBuildCollide) {
                 newTile1 = tile5;
                 newTile2 = tile6;
@@ -151,7 +153,12 @@ public class GamePanel extends JPanel {
             }
 
 
+
+
         }
+
+
+
 
         if (user.calcTotalElixir() >= 10){
             for (Build b :user.getBuildsPlacedByName("Elixir Collector")){
@@ -229,24 +236,26 @@ public class GamePanel extends JPanel {
     private void buildLoader(Graphics g){
         for (Build build : user.getBuildsPlaced()) {
             if (build.getBuildImg() != null) {
-                Tile[] t = build.getTiles();
-                Tile latestTile = t[t.length-1];
-                int x, y;
-                switch (build.getName()) {
-                    case "Archer Tower":
-                        //? punto y più basso dell'immagine più in alto rispetto al centro
-                        x = latestTile.xpoints[0] - (build.getBuildImg().getWidth() / 2);
-                        y = latestTile.ypoints[0] - build.getBuildImg().getHeight();
-                        break;
-                    default:
-                        //? punto y più basso dell'immagine al centro dell'ultima tile
-                        x = latestTile.xpoints[0]-build.getBuildImg().getWidth()/2;
-                        y = latestTile.ypoints[0]-build.getBuildImg().getHeight();
-                }
-
-                g.drawImage(build.getBuildImg(), x, y, null);
+                g.drawImage(build.getBuildImg(), coordsBuildImagesCalc(build)[0], coordsBuildImagesCalc(build)[1], null);
             }
         }
+    }
+
+    private int[] coordsBuildImagesCalc(Build build){
+        int x, y;
+        switch (build.getName()) {
+            case "Archer Tower":
+                //? punto y più basso dell'immagine più in alto rispetto al centro
+                x = build.getTiles()[build.getTiles().length-1].xpoints[0] - (build.getBuildImg().getWidth() / 2);
+                y = build.getTiles()[build.getTiles().length-1].ypoints[0] - build.getBuildImg().getHeight();
+                break;
+            default:
+                //? punto y più basso dell'immagine al centro dell'ultima tile
+                x = build.getCenterPoint(cos35, sin35, spazioLinee)[0] - build.getBuildImg().getWidth()/2;
+                y = build.getCenterPoint(cos35, sin35, spazioLinee)[1] - build.getBuildImg().getHeight();
+        }
+
+        return new int[]{x, y};
     }
 
     //--- New Build Listener
@@ -298,7 +307,7 @@ public class GamePanel extends JPanel {
 
 
         if (found) {
-            newTileBuild = new Tile(spazioLinee,linee,padding, colTemp, rowTemp);
+            newTileBuild = new Tile(spazioLinee, linee, padding, colTemp, rowTemp);
 
             boolean collide = false;
             for (int i = 0; i < Integer.parseInt(build.getSize().split("x")[0]); i++) {
@@ -312,6 +321,8 @@ public class GamePanel extends JPanel {
 
             newBuildCollide = collide;
 
+            setNewBuildTiles(build, false);
+
             repaint();
         }
     }
@@ -319,17 +330,7 @@ public class GamePanel extends JPanel {
         if (!newBuildCollide) {
             newBuildToggleMouseListener(false, null);
 
-            int buildWidth = Integer.parseInt(build.getSize().split("x")[0]);
-            int buildHeight = Integer.parseInt(build.getSize().split("x")[1]);
-            Tile[] buildTiles = new Tile[buildHeight*buildWidth];
-
-            for (int i = colTemp; i < colTemp + buildWidth; i++) {
-                for (int j = rowTemp; j < rowTemp + buildHeight; j++) {
-                    user.getTiles()[i][j].setBuild(build);
-                    buildTiles[((i-colTemp)*buildWidth)+(j-rowTemp)] = user.getTiles()[i][j];
-                }
-            }
-            build.setTiles(buildTiles);
+            setNewBuildTiles(build, true);
 
             if (build.getName().equals("Gold Mine")){
                 GoldMine gm = (GoldMine) build;
@@ -367,6 +368,22 @@ public class GamePanel extends JPanel {
 
             reloadItemsShop();
         }
+    }
+
+    private void setNewBuildTiles(Build build, boolean saveBuildShadow) {
+        int buildWidth = Integer.parseInt(build.getSize().split("x")[0]);
+        int buildHeight = Integer.parseInt(build.getSize().split("x")[1]);
+        Tile[] buildTiles = new Tile[buildHeight*buildWidth];
+
+        for (int i = colTemp; i < colTemp + buildWidth; i++) {
+            for (int j = rowTemp; j < rowTemp + buildHeight; j++) {
+                if (saveBuildShadow) {
+                    user.getTiles()[i][j].setBuild(build);
+                }
+                buildTiles[((i-colTemp)*buildWidth)+(j-rowTemp)] = user.getTiles()[i][j];
+            }
+        }
+        build.setTiles(buildTiles);
     }
 
     private void reloadItemsShop() {

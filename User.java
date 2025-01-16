@@ -33,10 +33,10 @@ public class User implements Serializable {
         }
 
 
-        //? imposto il municipio
+        //? imposto il municipio al centro del villaggio
         Build townHall = new Build(){};
-        for (int i = 20; i < 24; i++) {
-            for (int j = 20; j < 24; j++) {
+        for (int i = linee/2-2; i < linee/2+2; i++) {
+            for (int j = linee/2-2; j < linee/2+2; j++) {
                 tiles[i][j].setBuild(townHall);
             }
         }
