@@ -251,8 +251,8 @@ public class GamePanel extends JPanel {
                 break;
             default:
                 //? punto y più basso dell'immagine al centro dell'ultima tile
-                x = build.getCenterPoint(cos35, sin35, spazioLinee)[0] - build.getBuildImg().getWidth()/2;
-                y = build.getCenterPoint(cos35, sin35, spazioLinee)[1] - build.getBuildImg().getHeight();
+                x = build.getTiles()[build.getTiles().length - 1].xpoints[2] - build.getBuildImg().getWidth()/2;
+                y = build.getTiles()[build.getTiles().length - 1].ypoints[2] - build.getBuildImg().getHeight();
         }
 
         return new int[]{x, y};
