@@ -1,15 +1,11 @@
 package Grafica.JavaClashOfClans.builds.resources;
 
 import Grafica.JavaClashOfClans.MainWindow;
-import Grafica.JavaClashOfClans.Tile;
 import Grafica.JavaClashOfClans.builds.Build;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.util.Arrays;
 
 public class ElixirCollector extends Build {
     private boolean canProduce;
@@ -23,9 +19,7 @@ public class ElixirCollector extends Build {
         setTypeCost("gold");
         setBaseCost(150);
         setSize("3x3");
-        try {
-            setBuildImg(ImageIO.read(new File(MainWindow.assetsPath +"/images/elixirCollector.png")));
-        }catch (Exception ignored){}
+        setImagePath(MainWindow.assetsPath + "/images/elixirCollector.png");
 
         elixirGenerated = 200;  //? all'ora
         elixirCapacity = 1000;

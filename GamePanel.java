@@ -255,7 +255,7 @@ public class GamePanel extends JPanel {
                 y = build.getTiles()[build.getTiles().length - 1].ypoints[2] - build.getBuildImg().getHeight();
         }
 
-        return new int[]{x, y};
+        return new int[] {x, y};
     }
 
     //--- New Build Listener

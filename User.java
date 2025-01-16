@@ -1,6 +1,7 @@
 package Grafica.JavaClashOfClans;
 
 import Grafica.JavaClashOfClans.builds.Build;
+import Grafica.JavaClashOfClans.builds.TownHall;
 import Grafica.JavaClashOfClans.builds.resources.ElixirCollector;
 import Grafica.JavaClashOfClans.builds.resources.GoldMine;
 
@@ -34,14 +35,17 @@ public class User implements Serializable {
 
 
         //? imposto il municipio al centro del villaggio
-        Build townHall = new Build(){};
+        Build townHall = new TownHall();
+        Tile[] t = new Tile[4*4];
         for (int i = linee/2-2; i < linee/2+2; i++) {
             for (int j = linee/2-2; j < linee/2+2; j++) {
                 tiles[i][j].setBuild(townHall);
+                t[((i-(linee/2-2))*4)+(j-(linee/2-2))] = tiles[i][j];
             }
         }
+        townHall.setTiles(t);
 
-
+        buildsPlaced.add(townHall);
 
         //? salvo il file contenente l'oggetto user
         save(this);
@@ -87,6 +91,11 @@ public class User implements Serializable {
         if (elixirCollector > 0) {
             gP.resourcesToggleMouseListener(true, "elixir");
         }
+
+        for (Build b: getBuildsPlaced()){
+            b.setImagePath(b.getImagePath());
+        }
+
         save(this);
     }
 

@@ -2,11 +2,13 @@ package Grafica.JavaClashOfClans.builds;
 
 import Grafica.JavaClashOfClans.Tile;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.Serializable;
 
 public abstract class Build implements Serializable {
-    private String name, typeCost, size;
+    private String name, typeCost, size, imagePath;
     private int baseCost;
     private transient BufferedImage buildImg;
     private Tile[] tiles;
@@ -28,6 +30,10 @@ public abstract class Build implements Serializable {
         return size;
     }
 
+    public String getImagePath() {
+        return imagePath;
+    }
+
     public BufferedImage getBuildImg() {
         return buildImg;
     }
@@ -47,6 +53,13 @@ public abstract class Build implements Serializable {
 
     public void setTypeCost(String typeCost) {
         this.typeCost = typeCost;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+        try {
+            setBuildImg(ImageIO.read(new File(imagePath)));
+        } catch (Exception ignored){}
     }
 
     public void setBuildImg(BufferedImage buildImg) {

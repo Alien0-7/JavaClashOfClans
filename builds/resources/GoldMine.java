@@ -3,12 +3,9 @@ package Grafica.JavaClashOfClans.builds.resources;
 import Grafica.JavaClashOfClans.MainWindow;
 import Grafica.JavaClashOfClans.builds.Build;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.util.Arrays;
 
 public class GoldMine extends Build {
     private int goldGenerated, goldCapacity;
@@ -20,9 +17,7 @@ public class GoldMine extends Build {
         setTypeCost("elixir");
         setBaseCost(150);
         setSize("3x3");
-        try {
-            setBuildImg(ImageIO.read(new File(MainWindow.assetsPath +"/images/goldMine.png")));
-        }catch (Exception ignored){}
+        setImagePath(MainWindow.assetsPath +"/images/goldMine.png");
 
         goldGenerated = 200; //? all'ora
         goldCapacity = 1000;
