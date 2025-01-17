@@ -20,16 +20,16 @@ public class GamePanel extends JPanel {
     private final double sin35 = Math.sin(Math.toRadians(35));
 
     private User user;
-    private Timer resourceRepaintGoldTimer, resourceRepaintElixirTimer;
     private ResourcePanel resourceGoldPanel, resourceElixirPanel;
+    private MouseListener goldClickListener, elixirClickListener;
 
 
     //? variabili per le build nuove
     int colTemp = 0, rowTemp = 0;
     private Build newBuild;
-    private boolean drawNewBuild, newBuildCollide, paintedElixirIcon, paintedGoldIcon;
+    private boolean drawNewBuild, newBuildCollide, newBuildFoundTile;
     private Tile newTileBuild;
-    private MouseMotionListener newBuildMouseMotionListener, resourcesMouseMotionListener;
+    private MouseMotionListener newBuildMouseMotionListener;
 
 
     GamePanel(int spazioLinee, int linee, int padding, MainWindow mainWindow) {
@@ -46,7 +46,7 @@ public class GamePanel extends JPanel {
             try {
                 user.initFromFile(user.getFile(), this);
             } catch (Exception e) {
-                System.out.println("[ERROR] "+"Error while loading \"user.dat\" file!\n" + e);
+                System.out.println("[ERROR] " + "Error while loading \"user.dat\" file!\n" + e);
                 System.out.println("Creating new user...");
                 user = new User(spazioLinee, linee, padding);
             }
@@ -55,40 +55,41 @@ public class GamePanel extends JPanel {
         }
 
         try {
-            File img1 = new File(MainWindow.assetsPath +"/images/tile1.png");
+            File img1 = new File(MainWindow.assetsPath + "/images/tile1.png");
             tile1 = ImageIO.read(img1);
 
-            File img2 = new File(MainWindow.assetsPath +"/images/tile2.png");
+            File img2 = new File(MainWindow.assetsPath + "/images/tile2.png");
             tile2 = ImageIO.read(img2);
 
-            File img3 = new File(MainWindow.assetsPath +"/images/tile3.png");
+            File img3 = new File(MainWindow.assetsPath + "/images/tile3.png");
             tile3 = ImageIO.read(img3);
 
-            File img4 = new File(MainWindow.assetsPath +"/images/tile4.png");
+            File img4 = new File(MainWindow.assetsPath + "/images/tile4.png");
             tile4 = ImageIO.read(img4);
 
-            File img5 = new File(MainWindow.assetsPath +"/images/tile5.png");
+            File img5 = new File(MainWindow.assetsPath + "/images/tile5.png");
             tile5 = ImageIO.read(img5);
 
-            File img6 = new File(MainWindow.assetsPath +"/images/tile6.png");
+            File img6 = new File(MainWindow.assetsPath + "/images/tile6.png");
             tile6 = ImageIO.read(img6);
 
-            File bgimg = new File(MainWindow.assetsPath +"/images/background.png");
+            File bgimg = new File(MainWindow.assetsPath + "/images/background.png");
             bg = ImageIO.read(bgimg);
 
-            File goldImg = new File(MainWindow.assetsPath +"/images/gold.png");
+            File goldImg = new File(MainWindow.assetsPath + "/images/gold.png");
             gold = ImageIO.read(goldImg);
 
-            File elixirImg = new File(MainWindow.assetsPath +"/images/elixir.png");
+            File elixirImg = new File(MainWindow.assetsPath + "/images/elixir.png");
             elixir = ImageIO.read(elixirImg);
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
 
         //? aggiungo i bottoni
         add(new ShopButton(mainWindow));
 
         //? aggiungo le risorse in alto a destra
-        this.resourceGoldPanel = new ResourcePanel(mainWindow, gold, new Color(229,191,11) ,user.getGold(), user.getMaxGold(), 200, 30, 25, 25);
-        this.resourceElixirPanel = new ResourcePanel(mainWindow, elixir, new Color(189,39,192) ,user.getElixir(), user.getMaxElixir(), 200, 30, 25, 25+30+25);
+        this.resourceGoldPanel = new ResourcePanel(mainWindow, gold, new Color(229, 191, 11), user.getGold(), user.getMaxGold(), 200, 30, 25, 25);
+        this.resourceElixirPanel = new ResourcePanel(mainWindow, elixir, new Color(189, 39, 192), user.getElixir(), user.getMaxElixir(), 200, 30, 25, 25 + 30 + 25);
         add(resourceGoldPanel);
         add(resourceElixirPanel);
     }
@@ -97,8 +98,8 @@ public class GamePanel extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        int bgWidth = bg.getWidth()*MainWindow.calcBottomY(mainWindow,0)/bg.getHeight();
-        g.drawImage(bg, -(bgWidth - MainWindow.calcRightX(mainWindow, 0))/2,0, bgWidth,MainWindow.calcBottomY(mainWindow,0) ,null);
+        int bgWidth = bg.getWidth() * MainWindow.calcBottomY(mainWindow, 0) / bg.getHeight();
+        g.drawImage(bg, -(bgWidth - MainWindow.calcRightX(mainWindow, 0)) / 2, 0, bgWidth, MainWindow.calcBottomY(mainWindow, 0), null);
 
 
         g.setColor(Color.GREEN);
@@ -116,8 +117,8 @@ public class GamePanel extends JPanel {
 
 
             //? disegno le linee passando la x e y dei 2 punti
-            g.drawLine(lines_points[1][0],lines_points[1][1],  lines_points[1][2],lines_points[1][3]);
-            g.drawLine(lines_points[0][0],lines_points[0][1],  lines_points[0][2],lines_points[0][3]);
+            g.drawLine(lines_points[1][0], lines_points[1][1], lines_points[1][2], lines_points[1][3]);
+            g.drawLine(lines_points[0][0], lines_points[0][1], lines_points[0][2], lines_points[0][3]);
 
         }
 
@@ -140,40 +141,40 @@ public class GamePanel extends JPanel {
             for (int i = 0; i < height; i++) {
                 for (int j = 0; j < width; j++) {
                     g.drawImage(newTile1,
-                            (int)(newTileBuild.xpoints[0] - spazioLinee + cos35*spazioLinee*j - cos35*spazioLinee*i),
-                            (int)(newTileBuild.ypoints[0] + sin35*spazioLinee*j + sin35*spazioLinee*i),
-                            spazioLinee+2, (int) (sin35 * spazioLinee * 2)+2, null);
+                            (int) (newTileBuild.xpoints[0] - spazioLinee + cos35 * spazioLinee * j - cos35 * spazioLinee * i),
+                            (int) (newTileBuild.ypoints[0] + sin35 * spazioLinee * j + sin35 * spazioLinee * i),
+                            spazioLinee + 2, (int) (sin35 * spazioLinee * 2) + 2, null);
 
                     g.drawImage(newTile2,
-                            (int)(newTileBuild.xpoints[0] + cos35*spazioLinee*j - cos35*spazioLinee*i),
-                            (int)(newTileBuild.ypoints[0] + sin35*spazioLinee*j + sin35*spazioLinee*i),
-                            spazioLinee+2, (int) (sin35 * spazioLinee * 2)+2, null);
+                            (int) (newTileBuild.xpoints[0] + cos35 * spazioLinee * j - cos35 * spazioLinee * i),
+                            (int) (newTileBuild.ypoints[0] + sin35 * spazioLinee * j + sin35 * spazioLinee * i),
+                            spazioLinee + 2, (int) (sin35 * spazioLinee * 2) + 2, null);
                 }
             }
 
 
-            g.drawImage(newBuild.getBuildImg(), coordsBuildImagesCalc(newBuild)[0], coordsBuildImagesCalc(newBuild)[1], null);
+            if (newBuild.getTiles() != null) {
+                g.drawImage(newBuild.getBuildImg(), coordsBuildImagesCalc(newBuild)[0], coordsBuildImagesCalc(newBuild)[1], null);
+            }
 
 
         }
 
 
-
-
-        if (user.calcTotalElixir() >= 10){
-            for (Build b :user.getBuildsPlacedByName("Elixir Collector")){
+        if (user.calcTotalElixir() >= 10) {
+            for (Build b : user.getBuildsPlacedByName("Elixir Collector")) {
                 ElixirCollector ec = (ElixirCollector) b;
-                int x = ec.getTiles()[0].xpoints[0] - elixir.getWidth()/2;
+                int x = ec.getTiles()[0].xpoints[0] - elixir.getWidth() / 2;
                 int y = ec.getTiles()[0].ypoints[0] - elixir.getHeight() - 10;
 
                 g.drawImage(elixir, x, y, null);
             }
         }
 
-        if (user.calcTotalGold() >= 10){
-            for (Build b :user.getBuildsPlacedByName("Gold Mine")){
+        if (user.calcTotalGold() >= 10) {
+            for (Build b : user.getBuildsPlacedByName("Gold Mine")) {
                 GoldMine ec = (GoldMine) b;
-                int x = ec.getTiles()[0].xpoints[0] - gold.getWidth()/2;
+                int x = ec.getTiles()[0].xpoints[0] - gold.getWidth() / 2;
                 int y = ec.getTiles()[0].ypoints[0] - gold.getHeight() - 10;
 
                 g.drawImage(gold, x, y, null);
@@ -200,7 +201,7 @@ public class GamePanel extends JPanel {
                 (int) (ypoint*(linee-i))};                      //? yD - y * i => y * (max - i)
 
         //? aggiungo il padding
-        if (padding > 0){
+        if (padding > 0) {
             for (int j = 0; j < line_sw_ne.length; j++) {
                 line_sw_ne[j] += padding;
                 line_se_nw[j] += padding;
@@ -216,6 +217,7 @@ public class GamePanel extends JPanel {
 
         return returned_array;
     }
+
     private void baseLoader(Graphics g) {
         //?+ 2px per l'altezza e larghezza di ogni tile perché così aggiungo lo spazio occupato dalle linee della griglia ai lati dell'immagine
         for (int i = 0; i < user.getTiles().length; i++) {
@@ -226,14 +228,15 @@ public class GamePanel extends JPanel {
                     g.drawImage(tile1, currentTile.xpoints[0] - spazioLinee, currentTile.ypoints[0], spazioLinee + 2, (int) (spazioLinee * sin35 * 2) + 2, null);
                     g.drawImage(tile2, currentTile.xpoints[0], currentTile.ypoints[0], spazioLinee + 2, (int) (spazioLinee * sin35 * 2) + 2, null);
                 } else {
-                    g.drawImage(tile3, currentTile.xpoints[0]-spazioLinee, currentTile.ypoints[0], spazioLinee+2, (int)(spazioLinee*sin35*2)+2, null);
-                    g.drawImage(tile4, currentTile.xpoints[0], currentTile.ypoints[0], spazioLinee+2, (int)(spazioLinee*sin35*2)+2, null);
+                    g.drawImage(tile3, currentTile.xpoints[0] - spazioLinee, currentTile.ypoints[0], spazioLinee + 2, (int) (spazioLinee * sin35 * 2) + 2, null);
+                    g.drawImage(tile4, currentTile.xpoints[0], currentTile.ypoints[0], spazioLinee + 2, (int) (spazioLinee * sin35 * 2) + 2, null);
                 }
 
             }
         }
     }
-    private void buildLoader(Graphics g){
+
+    private void buildLoader(Graphics g) {
         for (Build build : user.getBuildsPlaced()) {
             if (build.getBuildImg() != null && build.getTiles() != null) {
                 g.drawImage(build.getBuildImg(), coordsBuildImagesCalc(build)[0], coordsBuildImagesCalc(build)[1], null);
@@ -241,21 +244,23 @@ public class GamePanel extends JPanel {
         }
     }
 
-    private int[] coordsBuildImagesCalc(Build build){
+    private int[] coordsBuildImagesCalc(Build build) {
         int x, y;
+
         switch (build.getName()) {
             case "Archer Tower":
                 //? punto y più basso dell'immagine più in alto rispetto al centro
-                x = build.getTiles()[build.getTiles().length-1].xpoints[0] - (build.getBuildImg().getWidth() / 2);
-                y = build.getTiles()[build.getTiles().length-1].ypoints[0] - build.getBuildImg().getHeight();
+                x = build.getTiles()[build.getTiles().length - 1].xpoints[0] - (build.getBuildImg().getWidth() / 2);
+                y = build.getTiles()[build.getTiles().length - 1].ypoints[0] - build.getBuildImg().getHeight();
                 break;
             default:
                 //? punto y più basso dell'immagine al centro dell'ultima tile
-                x = build.getTiles()[build.getTiles().length - 1].xpoints[2] - build.getBuildImg().getWidth()/2;
+                x = build.getTiles()[build.getTiles().length - 1].xpoints[2] - build.getBuildImg().getWidth() / 2;
                 y = build.getTiles()[build.getTiles().length - 1].ypoints[2] - build.getBuildImg().getHeight();
         }
 
-        return new int[] {x, y};
+        return new int[]{x, y};
+
     }
 
     //--- New Build Listener
@@ -278,41 +283,41 @@ public class GamePanel extends JPanel {
             addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    GamePanel.this.newBuildMouseClicked(build);
-                    removeMouseListener(this);
+                    GamePanel.this.newBuildMouseClicked(build, this);
                 }
             });
         }
 
     }
+
     private void newBuildMouseMoved(MouseEvent e, Build build) {
-        boolean found = false;
+        newBuildFoundTile = false;
         for (colTemp = 0; colTemp < user.getTiles().length; colTemp++) {
             for (rowTemp = 0; rowTemp < user.getTiles()[colTemp].length; rowTemp++) {
                 if (user.getTiles()[colTemp][rowTemp].contains(e.getX(), e.getY())) {
-                    if (colTemp + Integer.parseInt(build.getSize().split("x")[0]) > user.getTiles().length){
+                    if (colTemp + Integer.parseInt(build.getSize().split("x")[0]) > user.getTiles().length) {
                         colTemp -= colTemp + Integer.parseInt(build.getSize().split("x")[0]) - user.getTiles().length;
                     }
                     if (rowTemp + Integer.parseInt(build.getSize().split("x")[1]) > user.getTiles()[colTemp].length) {
                         rowTemp -= rowTemp + Integer.parseInt(build.getSize().split("x")[1]) - user.getTiles()[colTemp].length;
                     }
-                    found = true;
+                    newBuildFoundTile = true;
                     break;
                 }
             }
-            if (found) {
+            if (newBuildFoundTile) {
                 break;
             }
         }
 
 
-        if (found) {
+        if (newBuildFoundTile) {
             newTileBuild = new Tile(spazioLinee, linee, padding, colTemp, rowTemp);
 
             boolean collide = false;
             for (int i = 0; i < Integer.parseInt(build.getSize().split("x")[0]); i++) {
                 for (int j = 0; j < Integer.parseInt(build.getSize().split("x")[1]); j++) {
-                    if (user.getTiles()[colTemp+i][rowTemp+j].getBuild() != null) {
+                    if (user.getTiles()[colTemp + i][rowTemp + j].getBuild() != null) {
                         collide = true;
                         break;
                     }
@@ -326,38 +331,39 @@ public class GamePanel extends JPanel {
             repaint();
         }
     }
-    private void newBuildMouseClicked(Build build) {
-        if (!newBuildCollide) {
+
+    private void newBuildMouseClicked(Build build, MouseAdapter mouseAdapter) {
+        if (!newBuildCollide && newBuildFoundTile) {
             newBuildToggleMouseListener(false, null);
 
             setNewBuildTiles(build, true);
 
-            if (build.getName().equals("Gold Mine")){
+            if (build.getName().equals("Gold Mine")) {
                 GoldMine gm = (GoldMine) build;
                 gm.setCanProduce(true);
                 int x1 = gm.getTiles()[0].xpoints[0];
                 int x2 = gm.getTiles()[2].xpoints[1];
-                int x3 = gm.getTiles()[6].xpoints[3];
-                int x4 = gm.getTiles()[8].xpoints[2];
+                int x3 = gm.getTiles()[8].xpoints[2];
+                int x4 = gm.getTiles()[6].xpoints[3];
                 int y1 = gm.getTiles()[0].ypoints[0];
                 int y2 = gm.getTiles()[2].ypoints[1];
-                int y3 = gm.getTiles()[6].ypoints[3];
-                int y4 = gm.getTiles()[8].ypoints[2];
-                user.getCollectGoldTiles().add(new Polygon(new int[]{x1,x2,x3,x4},new int[]{y1,y2,y3,y4}, 4));
-                resourcesToggleMouseListener(true, "gold");
-            } else if (build.getName().equals("Elixir Collector")){
+                int y3 = gm.getTiles()[8].ypoints[2];
+                int y4 = gm.getTiles()[6].ypoints[3];
+                user.getCollectGoldTiles().add(new Polygon(new int[]{x1, x2, x3, x4}, new int[]{y1, y2, y3, y4}, 4));
+                toggleGoldMouseListener();
+            } else if (build.getName().equals("Elixir Collector")) {
                 ElixirCollector ec = (ElixirCollector) build;
                 ec.setCanProduce(true);
                 int x1 = ec.getTiles()[0].xpoints[0];
                 int x2 = ec.getTiles()[2].xpoints[1];
-                int x3 = ec.getTiles()[6].xpoints[3];
-                int x4 = ec.getTiles()[8].xpoints[2];
+                int x3 = ec.getTiles()[8].xpoints[2];
+                int x4 = ec.getTiles()[6].xpoints[3];
                 int y1 = ec.getTiles()[0].ypoints[0];
                 int y2 = ec.getTiles()[2].ypoints[1];
-                int y3 = ec.getTiles()[6].ypoints[3];
-                int y4 = ec.getTiles()[8].ypoints[2];
-                user.getCollectElixirTiles().add(new Polygon(new int[]{x1,x2,x3,x4},new int[]{y1,y2,y3,y4}, 4));
-                resourcesToggleMouseListener(true, "elixir");
+                int y3 = ec.getTiles()[8].ypoints[2];
+                int y4 = ec.getTiles()[6].ypoints[3];
+                user.getCollectElixirTiles().add(new Polygon(new int[]{x1, x2, x3, x4}, new int[]{y1, y2, y3, y4}, 4));
+                toggleElixirMouseListener();
             }
 
 
@@ -367,20 +373,22 @@ public class GamePanel extends JPanel {
             repaint();
 
             reloadItemsShop();
+
+            removeMouseListener(mouseAdapter);
         }
     }
 
     private void setNewBuildTiles(Build build, boolean saveBuildShadow) {
         int buildWidth = Integer.parseInt(build.getSize().split("x")[0]);
         int buildHeight = Integer.parseInt(build.getSize().split("x")[1]);
-        Tile[] buildTiles = new Tile[buildHeight*buildWidth];
+        Tile[] buildTiles = new Tile[buildHeight * buildWidth];
 
         for (int i = colTemp; i < colTemp + buildWidth; i++) {
             for (int j = rowTemp; j < rowTemp + buildHeight; j++) {
                 if (saveBuildShadow) {
                     user.getTiles()[i][j].setBuild(build);
                 }
-                buildTiles[((i-colTemp)*buildWidth)+(j-rowTemp)] = user.getTiles()[i][j];
+                buildTiles[((i - colTemp) * buildWidth) + (j - rowTemp)] = user.getTiles()[i][j];
             }
         }
         build.setTiles(buildTiles);
@@ -392,97 +400,67 @@ public class GamePanel extends JPanel {
     }
 
     //--- Resources Listener
-    public void resourcesToggleMouseListener(boolean value, String type){
-        if (!value){
-            removeMouseMotionListener(resourcesMouseMotionListener);
-            if (this.resourceRepaintGoldTimer != null){
-                resourceRepaintGoldTimer.stop();
-            }
-        } else {
-            if (type.equals("gold")){
-                this.resourceRepaintGoldTimer = new Timer(15, new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        if (user.calcTotalGold() >= 10) {
-                            paintedGoldIcon = true;
-                            repaint();
-                            resourcesMouseMotionListener = new MouseAdapter() {
-                                @Override
-                                public void mouseMoved(MouseEvent e) {
-                                    ArrayList<Polygon> resourcesTiles = user.calcResourcesTiles(type);
-                                    GamePanel.this.resourcesMouseMoved(e, type, resourcesTiles);
-                                }
-                            };
-                            addMouseMotionListener(resourcesMouseMotionListener);
-                        } else {
-                            paintedGoldIcon = false;
+    public void toggleGoldMouseListener() {
+        String type = "gold";
+
+        if (goldClickListener != null) {
+            removeMouseListener(goldClickListener);
+        }
+
+        ArrayList<Polygon> resourcesTiles = user.calcResourcesTiles(type);
+        goldClickListener = new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                for (Polygon tiles : resourcesTiles) {
+                    if (tiles.contains(e.getX(), e.getY()) && !drawNewBuild && user.calcTotalGold() >= 10) {
+
+                        double totalGold = 0;
+                        for (Build build : user.getBuildsPlacedByName("Gold Mine")) {
+                            GoldMine gm = (GoldMine) build;
+                            totalGold += gm.collect();
                         }
-
+                        user.addGold((int) totalGold);
+                        GamePanel.this.resourceGoldPanel.recreate(user.getMaxGold(), user.getGold());
+                        repaint();
+                        break;
                     }
-                });
-                resourceRepaintGoldTimer.start();
+                }
+            }
+        };
 
-            } else if (type.equals("elixir")) {
-                this.resourceRepaintElixirTimer = new Timer(15, new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        if (user.calcTotalElixir() >= 10) {
-                            paintedElixirIcon = true;
-                            repaint();
-                            resourcesMouseMotionListener = new MouseAdapter() {
-                                @Override
-                                public void mouseMoved(MouseEvent e) {
-                                    ArrayList<Polygon> resourcesTiles = user.calcResourcesTiles(type);
-                                    GamePanel.this.resourcesMouseMoved(e, type, resourcesTiles);
-                                }
-                            };
-                            addMouseMotionListener(resourcesMouseMotionListener);
-                        } else {
-                            paintedElixirIcon = false;
+        addMouseListener(goldClickListener);
+    }
+
+    public void toggleElixirMouseListener() {
+        String type = "elixir";
+
+        if (elixirClickListener != null) {
+            removeMouseListener(elixirClickListener);
+        }
+
+        ArrayList<Polygon> resourcesTiles = user.calcResourcesTiles(type);
+        elixirClickListener = new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                for (Polygon tiles : resourcesTiles) {
+                    if (tiles.contains(e.getX(), e.getY()) && !drawNewBuild && user.calcTotalElixir() >= 10) {
+
+                        double totalElixir = 0;
+                        for (Build build : user.getBuildsPlacedByName("Elixir Collector")) {
+                            ElixirCollector ec = (ElixirCollector) build;
+                            totalElixir += ec.collect();
                         }
+                        user.addElixir((int) totalElixir);
+                        GamePanel.this.resourceElixirPanel.recreate(user.getMaxElixir(), user.getElixir());
+                        repaint();
+                        break;
                     }
-                });
-
-                resourceRepaintElixirTimer.start();
+                }
             }
+        };
 
-        }
-    }
-    private void resourcesMouseMoved(MouseEvent e, String type, ArrayList<Polygon> rt){
-        for (Polygon tiles: rt) {
-            if (tiles.contains(e.getX(), e.getY()) && getMouseListeners().length == 0) {
-                addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mouseClicked(MouseEvent e) {
-                        GamePanel.this.resourcesMouseClicked(type);
-                        removeMouseListener(this);
-                    }
-                });
-            }
-        }
-    }
-    private void resourcesMouseClicked(String type){
-        if (type.equals("gold")) {
-            double totalGold = 0;
-            for (Build build : user.getBuildsPlacedByName("Gold Mine")) {
-                GoldMine gm = (GoldMine) build;
-                totalGold += gm.collect();
-            }
-            user.addGold((int) totalGold);
-            this.resourceGoldPanel.recreate(user.getMaxGold(), user.getGold());
-            repaint();
+        addMouseListener(elixirClickListener);
 
-        } else if (type.equals("elixir")) {
-            double totalElixir = 0;
-            for (Build build : user.getBuildsPlacedByName("Elixir Collector")) {
-                ElixirCollector ec = (ElixirCollector) build;
-                totalElixir += ec.collect();
-            }
-            user.addElixir((int) totalElixir);
-            this.resourceElixirPanel.recreate(user.getMaxElixir(), user.getElixir());
-            repaint();
-
-        }
     }
 
 }

@@ -86,10 +86,10 @@ public class User implements Serializable {
 
         setBuildsPlaced(tempBuildsPlaced);
         if (goldMines > 0) {
-            gP.resourcesToggleMouseListener(true, "gold");
+            gP.toggleGoldMouseListener();
         }
         if (elixirCollector > 0) {
-            gP.resourcesToggleMouseListener(true, "elixir");
+            gP.toggleElixirMouseListener();
         }
 
         for (Build b: getBuildsPlaced()){
